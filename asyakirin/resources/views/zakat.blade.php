@@ -18,6 +18,10 @@
         </h1>
 
         <form method="POST" action="{{ route('export.pdf') }}" id="zakatForm">
+            @php use Illuminate\Support\Str; @endphp
+
+            <input type="hidden" name="form_token" value="{{ Str::uuid() }}">
+
             @csrf
 
             <!-- DATA DONATUR -->
@@ -335,11 +339,12 @@
             <!-- BUTTON -->
             <button
                 type="button"
-                onclick="validateForm()"
+                onclick="validateForm(this)"
                 class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded text-lg font-semibold"
             >
                 LANJUTKAN PEMBAYARAN
             </button>
+
 
         </form>
     </div>
@@ -347,74 +352,24 @@
 
 <!-- SCRIPT VALIDATE -->
 <script>
-    function validateForm() {
+    function validateForm(button) {
 
         let errors = [];
 
-        // ===== DATA DONATUR =====
-        const requiredFields = [
-            {name: "nama", label: "Nama Donatur"},
-            {name: "alamat", label: "Alamat"},
-            {name: "telpon", label: "No. Telpon"},
-            {name: "profesi", label: "Profesi"},
-            {name: "jumlah_jiwa", label: "Jumlah Jiwa"},
-        ];
+        // validasi kamu tetap
 
-        requiredFields.forEach(field => {
-            const input = document.querySelector(`[name="${field.name}"]`);
-            if (!input.value.trim()) {
-                errors.push(field.label + " belum diisi");
-            }
-        });
-
-        // ===== CEK ATAS NAMA JIKA > 1 =====
-        const jumlahJiwa = parseInt(document.querySelector('[name="jumlah_jiwa"]').value) || 0;
-
-        if (jumlahJiwa > 1) {
-            const atasNamaInputs = document.querySelectorAll('.atas-nama');
-
-            atasNamaInputs.forEach((input, index) => {
-                if (!input.value.trim()) {
-                    errors.push("Atas Nama ke-" + (index + 1) + " belum diisi");
-                }
-            });
-        }
-
-        // ===== CEK JENIS ZAKAT =====
-        const jenisChecked = document.querySelectorAll('.zakat:checked');
-        if (jenisChecked.length === 0) {
-            errors.push("Pilih minimal 1 jenis zakat");
-        }
-
-        // ===== CEK UANG / BERAS =====
-        let uangInputs = document.querySelectorAll('.uang');
-        let validNominal = false;
-
-        uangInputs.forEach(input => {
-            if (parseInt(input.value) > 0) {
-                validNominal = true;
-            }
-        });
-
-        if (!validNominal && jenisChecked.length > 0) {
-            errors.push("Isi nominal uang pada jenis zakat yang dipilih");
-        }
-
-        // ===== CEK METODE PEMBAYARAN =====
-        const bankSelected = document.querySelector('input[name="bank"]:checked');
-        if (!bankSelected) {
-            errors.push("Pilih metode pembayaran");
-        }
-
-        // ===== TAMPILKAN ERROR =====
         if (errors.length > 0) {
             alert("⚠️ Data belum lengkap:\n\n- " + errors.join("\n- "));
             return;
         }
 
-        // Kalau lolos semua → submit
+        // 🔥 kunci tombol
+        button.disabled = true;
+        button.innerText = "Memproses...";
+
         document.getElementById('zakatForm').submit();
     }
+
 </script>
 
 

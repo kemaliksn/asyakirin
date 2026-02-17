@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
 
             // Nomor otomatis: ASY/26/UPZ/0001 — UNIQUE agar tidak duplikat
-            $table->string('nomor', 20)->unique();
+            $table->string('nomor')->unique();
 
             // Data Muzakki
             $table->string('nama', 100);
