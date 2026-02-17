@@ -218,34 +218,34 @@
             <div class="space-y-3 mb-6">
 
                 <!-- BNI -->
-                <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
+                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('icons/bni.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">Bank Negara Indonesia</span>
                     </div>
                     <input type="radio" name="bank" value="BNI"
                         class="w-5 h-5 accent-green-600">
-                </label>
+                </label> --}}
 
                 <!-- BCA -->
-                <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
+                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('icons/bca.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">Bank Central Asia</span>
                     </div>
                     <input type="radio" name="bank" value="BCA"
                         class="w-5 h-5 accent-green-600">
-                </label>
+                </label> --}}
 
                 <!-- Mandiri -->
-                <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
+                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('icons/mandiri.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">Bank Mandiri</span>
                     </div>
                     <input type="radio" name="bank" value="Mandiri"
                         class="w-5 h-5 accent-green-600">
-                </label>
+                </label> --}}
 
                 <!-- BSI -->
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
@@ -258,24 +258,24 @@
                 </label>
 
                 <!-- Muamalat -->
-                <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
+                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('icons/muamalat.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">Bank Muamalat</span>
                     </div>
                     <input type="radio" name="bank" value="Muamalat"
                         class="w-5 h-5 accent-green-600">
-                </label>
+                </label> --}}
 
                 <!-- BRI -->
-                <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
+                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('icons/bri.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">Bank Rakyat Indonesia</span>
                     </div>
                     <input type="radio" name="bank" value="BRI"
                         class="w-5 h-5 accent-green-600">
-                </label>
+                </label> --}}
 
                 <!-- QRIS -->
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
