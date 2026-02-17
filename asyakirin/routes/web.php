@@ -2,48 +2,68 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ZakatController;
+use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\RekapController;
 
-Route::post('/zakat/export-pdf', [ZakatController::class, 'exportPdf'])->name('zakat.export-pdf');
-Route::get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
-Route::post('/export-pdf', [ZakatController::class, 'exportPdf'])->name('export.pdf');
+// ══════════════════════════════════════════════
+//  PUBLIK — Form Zakat (tidak perlu login)
+// ══════════════════════════════════════════════
 
 Route::get('/', function () {
     return view('zakat');
 });
 
-// ── Admin ──
+Route::post('/zakat/export-pdf', [ZakatController::class, 'exportPdf'])->name('export.pdf');
+Route::get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
+
+
+// ══════════════════════════════════════════════
+//  ADMIN — Login (tidak perlu middleware)
+// ══════════════════════════════════════════════
+
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    // Halaman login
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
 
-    Route::get('/transaksi', function () {
-        return view('admin.transaksi');
-    })->name('transaksi');
+    // ── Protected routes (harus login) ──
+    Route::middleware('admin.auth')->group(function () {
 
-    // ✅ Tambahkan ini
-    Route::get('/transaksi/{id}', function ($id) {
-        return view('admin.transaksi-detail', ['id' => $id]);
-    })->name('transaksi.show');
+        // Dashboard
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/laporan', function () {
-        return view('admin.laporan');
-    })->name('laporan');
+        // Transaksi
+        Route::get('/transaksi', function () {
+            return view('admin.transaksi');
+        })->name('transaksi');
 
-    Route::get('/rekap', function () {
-        return view('admin.rekap');
-    })->name('rekap');
+        Route::get('/transaksi/{id}', function ($id) {
+            return view('admin.transaksi-detail', ['id' => $id]);
+        })->name('transaksi.show');
 
-    Route::get('/settings', function () {
-        return view('admin.settings');
-    })->name('settings');
+        // Laporan
+        Route::get('/laporan', function () {
+            return view('admin.laporan');
+        })->name('laporan');
 
-    Route::get('/akun', function () {
-        return view('admin.akun');
-    })->name('akun');
+        // Rekap
+        Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
 
-    Route::post('/logout', function () {
-        return redirect('/');
-    })->name('logout');
+        // Settings
+        Route::get('/settings', function () {
+            return view('admin.settings');
+        })->name('settings');
+
+        // Akun
+        Route::get('/akun', function () {
+            return view('admin.akun');
+        })->name('akun');
+
+        // Logout
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+    });
 
 });
