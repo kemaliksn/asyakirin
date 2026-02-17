@@ -40,6 +40,9 @@ return new class extends Migration
             $table->string('nama_amil', 100)->nullable();
             $table->date('tanggal');
 
+            // ✅ Status pembayaran
+            $table->enum('status', ['Belum Lunas', 'Lunas', 'Batal'])->default('Belum Lunas');
+
             // 2 digit tahun untuk grouping nomor per tahun (ex: "26")
             $table->char('tahun', 2)->index();
 

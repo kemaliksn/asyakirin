@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ZakatPenerimaan extends Model
 {
+    protected $table = 'zakat_penerimaans';
+
     protected $fillable = [
         'nomor',
         'nama',
@@ -20,15 +22,44 @@ class ZakatPenerimaan extends Model
         'terbilang',
         'nama_amil',
         'tanggal',
+        'status',
         'tahun',
     ];
 
-    // Cast JSON kolom otomatis jadi array PHP
+    // Otomatis decode JSON saat diakses
     protected $casts = [
-        'atas_nama'   => 'array',
-        'items'       => 'array',
-        'tanggal'     => 'date',
-        'total_uang'  => 'integer',
-        'total_beras' => 'float',
+        'atas_nama' => 'array',
+        'items'     => 'array',
+        'tanggal'   => 'date',
     ];
+
+    // ── Scope filter status ──
+    public function scopeLunas($query)
+    {
+        return $query->where('status', 'Lunas');
+    }
+
+    public function scopeBelumLunas($query)
+    {
+        return $query->where('status', 'Belum Lunas');
+    }
+
+    // ── Badge CSS class untuk blade ──
+    public function getBadgeClassAttribute(): string
+    {
+        return match($this->status) {
+            'Lunas'       => 'lunas',
+            'Belum Lunas' => 'pending',
+            'Batal'       => 'batal',
+            default       => 'pending',
+        };
+    }
+
+    // ── Ambil daftar jenis dari JSON items ──
+    public function getJenisLabelAttribute(): string
+    {
+        if (empty($this->items)) return '-';
+        $jenisList = array_unique(array_column($this->items, 'jenis'));
+        return implode(', ', $jenisList);
+    }
 }

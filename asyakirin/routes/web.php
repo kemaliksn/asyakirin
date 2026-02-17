@@ -2,29 +2,29 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ZakatController;
+use App\Http\Controllers\AdminDashboardController;
 
-// Export PDF baru (simpan ke DB dulu, lalu buka PDF)
 Route::post('/zakat/export-pdf', [ZakatController::class, 'exportPdf'])->name('zakat.export-pdf');
-
-// Cetak ulang PDF dari data yang sudah ada di DB
 Route::get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
-
-Route::post('/export-pdf', [ZakatController::class, 'exportPdf'])
-    ->name('export.pdf');
+Route::post('/export-pdf', [ZakatController::class, 'exportPdf'])->name('export.pdf');
 
 Route::get('/', function () {
     return view('zakat');
 });
 
-// ── Admin Dashboard ──
+// ── Admin ──
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', function () {
-        return view('admin.dashboardadmin'); // ← taruh blade di resources/views/admin/
-    })->name('dashboard');
+
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/transaksi', function () {
         return view('admin.transaksi');
     })->name('transaksi');
+
+    // ✅ Tambahkan ini
+    Route::get('/transaksi/{id}', function ($id) {
+        return view('admin.transaksi-detail', ['id' => $id]);
+    })->name('transaksi.show');
 
     Route::get('/laporan', function () {
         return view('admin.laporan');
@@ -45,4 +45,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', function () {
         return redirect('/');
     })->name('logout');
+
 });
