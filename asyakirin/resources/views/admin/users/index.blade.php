@@ -19,8 +19,6 @@
         .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
         .sidebar-footer { padding: 14px 10px; border-top: 1px solid rgba(255,255,255,.12); }
         .topbar { position: fixed; top: 0; left: 220px; right: 0; height: 64px; background: #fff; border-bottom: 1px solid #e5ede8; display: flex; align-items: center; padding: 0 28px; gap: 14px; z-index: 99; box-shadow: 0 2px 12px rgba(26,107,60,.07); }
-        .admin-chip { display: flex; align-items: center; gap: 9px; background: #f1f7f3; border: 1px solid #d3e8da; border-radius: 10px; padding: 6px 12px; cursor: pointer; }
-        .admin-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #22813f, #1a6b3c); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; }
         .main-content { margin-left: 220px; padding-top: 64px; background: #f4f8f5; min-height: 100vh; }
         .content-inner { padding: 28px; }
         .page-title { font-size: 26px; font-weight: 800; color: #111; margin-bottom: 22px; }
@@ -36,22 +34,23 @@
         table.data-table td { padding: 13px 18px; font-size: 13px; color: #333; border-top: 1px solid #f3f7f4; vertical-align: middle; }
         table.data-table tbody tr:hover { background: #f8fdf9; }
         .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
-        .badge.admin { background: #fef3c7; color: #92400e; }
+        .badge.admin    { background: #fef3c7; color: #92400e; }
         .badge.pengurus { background: #dbeafe; color: #1e40af; }
-        .badge.active { background: #dcfce7; color: #15803d; }
+        .badge.active   { background: #dcfce7; color: #15803d; }
         .badge.inactive { background: #fee2e2; color: #b91c1c; }
+        .badge.src-admins { background: #f3e8fd; color: #7c3aed; }
+        .badge.src-users  { background: #e0f2fe; color: #075985; }
         .btn-sm { padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 7px; cursor: pointer; text-decoration: none; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; border: none; }
-        .btn-edit { background: #e0f2fe; color: #075985; }
-        .btn-edit:hover { background: #bae6fd; }
+        .btn-edit   { background: #e0f2fe; color: #075985; }
+        .btn-edit:hover   { background: #bae6fd; }
         .btn-delete { background: #fee2e2; color: #b91c1c; }
         .btn-delete:hover { background: #fecaca; }
         .btn-toggle { background: #f1f7f3; color: #1a6b3c; border: 1px solid #d3e8da; }
         .btn-toggle:hover { background: #daf0e4; }
         .alert { padding: 14px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
         .alert.success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .alert.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .alert.error   { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
         .empty-state { text-align: center; padding: 60px 20px; color: #aaa; font-size: 14px; }
-        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } .topbar { left: 0; } }
     </style>
 </head>
 <body>
@@ -74,9 +73,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
         </a>
-        <!-- Menu Kelola Akun - HANYA TAMPIL UNTUK ADMIN -->
-        @if(auth()->check() && auth()->user()->role === 'admin')
-        <a href="{{ route('admin.users.index') }}" class="nav-item">
+        @if((auth('admin')->check() && auth('admin')->user()->role === 'admin') || (auth('web')->check() && auth('web')->user()->role === 'admin'))
+        <a href="{{ route('admin.users.index') }}" class="nav-item active">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
@@ -121,20 +119,16 @@
     <div style="display:flex;align-items:center;gap:8px;">
         <a href="{{ route('admin.dashboard') }}" style="color:#888;font-size:13px;text-decoration:none;">Dashboard</a>
         <span style="color:#ccc;">/</span>
-        <span style="font-size:13px;font-weight:600;color:#1a6b3c;">Kelola Akun Pengurus</span>
+        <span style="font-size:13px;font-weight:600;color:#1a6b3c;">Kelola Akun</span>
     </div>
     <div style="flex:1;"></div>
-    <div class="admin-chip">
-        <div class="admin-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
-        <span style="font-size:13px;font-weight:600;color:#222;">{{ auth()->user()->name ?? 'Admin Ahmad' }}</span>
-    </div>
 </header>
 
 <!-- MAIN -->
 <main class="main-content">
 <div class="content-inner">
 
-    <h1 class="page-title">Kelola <span>Akun Pengurus</span></h1>
+    <h1 class="page-title">Kelola <span>Semua Akun</span></h1>
 
     @if(session('success'))
     <div class="alert success">
@@ -152,9 +146,9 @@
 
     <div class="card">
         <div class="card-header">
-            <h3>Daftar Akun</h3>
+            <h3>Daftar Semua Akun</h3>
             <span style="font-size:12px;background:#e8f5ee;color:#1a6b3c;padding:2px 10px;border-radius:20px;font-weight:600;">
-                {{ $users->total() }} akun
+                {{ $total }} akun
             </span>
             <a href="{{ route('admin.users.create') }}" class="btn-primary" style="margin-left:8px;">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M12 4v16m8-8H4"/></svg>
@@ -170,20 +164,33 @@
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Tabel</th>
                         <th>Status</th>
                         <th>Terdaftar</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($users as $i => $user)
+                    @forelse($items as $i => $user)
+                    @php
+                        $currentUser = auth('admin')->check() ? auth('admin')->user() : auth('web')->user();
+                        $currentSource = auth('admin')->check() ? 'admins' : 'users';
+                        $isSelf = ($user->id === $currentUser->id && $user->source === $currentSource);
+                        $no = ($currentPage - 1) * $perPage + $i + 1;
+                    @endphp
                     <tr>
-                        <td style="color:#aaa;font-size:12.5px;">{{ $users->firstItem() + $i }}.</td>
-                        <td style="font-weight:600;">{{ $user->name }}</td>
+                        <td style="color:#aaa;font-size:12.5px;">{{ $no }}.</td>
+                        <td style="font-weight:600;">
+                            {{ $user->name }}
+                            @if($isSelf)
+                            <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:10px;margin-left:4px;">Anda</span>
+                            @endif
+                        </td>
                         <td style="color:#555;">{{ $user->email }}</td>
+                        <td><span class="badge {{ $user->role }}">{{ ucfirst($user->role) }}</span></td>
                         <td>
-                            <span class="badge {{ $user->role }}">
-                                {{ ucfirst($user->role) }}
+                            <span class="badge src-{{ $user->source }}">
+                                {{ $user->source === 'admins' ? '🔐 Admins' : '👤 Users' }}
                             </span>
                         </td>
                         <td>
@@ -195,26 +202,31 @@
                             {{ $user->created_at->translatedFormat('d M Y') }}
                         </td>
                         <td>
-                            <div style="display:flex;gap:6px;">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="btn-sm btn-edit">
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                {{-- Edit --}}
+                                <a href="{{ route('admin.users.edit', $user->id) }}?source={{ $user->source }}" class="btn-sm btn-edit">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     Edit
                                 </a>
 
-                                <form action="{{ route('admin.users.toggleActive', $user) }}" method="POST" style="display:inline;">
+                                {{-- Toggle aktif --}}
+                                <form action="{{ route('admin.users.toggleActive', $user->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('PATCH')
+                                    <input type="hidden" name="source" value="{{ $user->source }}">
                                     <button type="submit" class="btn-sm btn-toggle">
                                         {{ $user->is_active ? '❌' : '✅' }}
                                     </button>
                                 </form>
 
-                                @if($user->id !== auth()->id())
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
+                                {{-- Hapus (sembunyikan untuk akun sendiri) --}}
+                                @if(!$isSelf)
+                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                                       onsubmit="return confirm('Yakin ingin menghapus akun {{ $user->name }}?')"
                                       style="display:inline;">
                                     @csrf
                                     @method('DELETE')
+                                    <input type="hidden" name="source" value="{{ $user->source }}">
                                     <button type="submit" class="btn-sm btn-delete">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         Hapus
@@ -226,22 +238,30 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="empty-state">
-                            📭 Belum ada akun terdaftar
-                        </td>
+                        <td colspan="8" class="empty-state">📭 Belum ada akun terdaftar</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        @if($users->hasPages())
-        <div style="padding:16px 22px;border-top:1px solid #f0f5f1;">
-            {{ $users->links() }}
+        {{-- Pagination manual --}}
+        @php $lastPage = max(1, (int)ceil($total / $perPage)); @endphp
+        @if($lastPage > 1)
+        <div style="padding:16px 22px;border-top:1px solid #f0f5f1;display:flex;gap:6px;align-items:center;">
+            @for($p = 1; $p <= $lastPage; $p++)
+            <a href="?page={{ $p }}"
+               style="padding:5px 12px;border-radius:7px;font-size:13px;font-weight:600;text-decoration:none;
+                      background:{{ $p === $currentPage ? '#1a6b3c' : '#f1f7f3' }};
+                      color:{{ $p === $currentPage ? '#fff' : '#1a6b3c' }};
+                      border:1px solid {{ $p === $currentPage ? '#1a6b3c' : '#d3e8da' }};">
+                {{ $p }}
+            </a>
+            @endfor
         </div>
         @endif
-    </div>
 
+    </div>
 </div>
 </main>
 

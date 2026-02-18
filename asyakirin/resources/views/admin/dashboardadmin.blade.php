@@ -114,7 +114,7 @@
             Dashboard
         </a>
         <!-- Menu Kelola Akun - HANYA TAMPIL UNTUK ADMIN -->
-        @if(auth()->check() && auth()->user()->role === 'admin')
+        @if((auth('admin')->check() && auth('admin')->user()->role === 'admin') || (auth('web')->check() && auth('web')->user()->role === 'admin'))
         <a href="{{ route('admin.users.index') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -123,6 +123,10 @@
             Kelola Akun
         </a>
         @endif
+        <a href="{{ route('admin.zakat.create') }}" class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M12 4v16m8-8H4"/></svg>
+            Input Data Zakat
+        </a>
         <a href="{{ route('admin.transaksi') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             Transaksi
@@ -159,7 +163,10 @@
 <header class="topbar">
     <div>
         <p style="font-size:12px;color:#888;font-weight:500;">Assalamu'alaikum</p>
-        <h1 class="topbar-greeting">Admin <span>{{ auth()->user()->name ?? 'Ahmad' }}</span></h1>
+        @php
+            $currentUser = auth('admin')->check() ? auth('admin')->user() : auth('web')->user();
+        @endphp
+        <h1 class="topbar-greeting">Admin <span>{{ $currentUser->name ?? 'Ahmad' }}</span></h1>
     </div>
     <div class="topbar-spacer"></div>
     <div class="topbar-search">
@@ -170,8 +177,8 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
     </button>
     <div class="admin-chip">
-        <div class="admin-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
-        <span class="admin-name">{{ auth()->user()->name ?? 'Admin Ahmad' }}</span>
+        <div class="admin-avatar">{{ strtoupper(substr($currentUser->name ?? 'A', 0, 1)) }}</div>
+        <span class="admin-name">{{ $currentUser->name ?? 'Admin' }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:#888;"><path d="M19 9l-7 7-7-7"/></svg>
     </div>
 </header>
@@ -270,6 +277,7 @@
                                 <th>Nominal</th>
                                 <th>Status</th>
                                 <th>Tanggal</th>
+                                <th>Diinput Oleh</th> <!-- ← kolom baru -->
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -295,6 +303,13 @@
                                     <span class="badge {{ $cls }}">{{ $row->status }}</span>
                                 </td>
                                 <td style="color:#888;white-space:nowrap;">{{ $row->tanggal }}</td>
+                                <td>
+                                    @if($row->input_by === 'Donatur')
+                                    <span style="color:#888;font-size:12px;">🌐 Donatur Langsung</span>
+                                    @else
+                                    <span style="color:#1a6b3c;font-size:12px;font-weight:600;">👤 {{ $row->input_by }}</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.transaksi.show', $row->id) }}"
                                        style="color:#1a6b3c;font-size:12px;font-weight:600;text-decoration:none;">

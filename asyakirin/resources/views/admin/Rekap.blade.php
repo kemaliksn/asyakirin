@@ -138,7 +138,7 @@
             Dashboard
         </a>
         <!-- Menu Kelola Akun - HANYA TAMPIL UNTUK ADMIN -->
-        @if(auth()->check() && auth()->user()->role === 'admin')
+        @if(auth('admin')->check() && auth('admin')->user()->role === 'admin')
         <a href="{{ route('admin.users.index') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>

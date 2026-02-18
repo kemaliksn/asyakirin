@@ -49,28 +49,30 @@ class AdminDashboardController extends Controller
 
         // ── 2. TRANSAKSI TERBARU (5 data terakhir) ─────────────────
 
-        $transaksi = ZakatPenerimaan::orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get()
-            ->map(function ($row) {
-                // Ambil jenis pertama dari JSON items sebagai label kolom Jenis
-                $items = is_array($row->items) ? $row->items : json_decode($row->items, true);
-                $jenisLabel = '';
-                if (!empty($items)) {
-                    $jenisList = array_column($items, 'jenis');
-                    $jenisLabel = implode(', ', array_unique($jenisList));
-                }
+        // AdminDashboardController.php
+        $transaksi = ZakatPenerimaan::with('creator') // ← eager load relasi
+        ->orderBy('created_at', 'desc')
+        ->limit(10)
+        ->get()
+        ->map(function ($row) {
+            $items = is_array($row->items) ? $row->items : json_decode($row->items, true);
+            $jenisLabel = '';
+            if (!empty($items)) {
+                $jenisList = array_column($items, 'jenis');
+                $jenisLabel = implode(', ', array_unique($jenisList));
+            }
 
-                return (object)[
-                    'id'      => $row->id,
-                    'invoice' => $row->nomor,
-                    'nama'    => $row->nama,
-                    'jenis'   => $jenisLabel,
-                    'nominal' => $row->total_uang,
-                    'status'  => $row->status,
-                    'tanggal' => Carbon::parse($row->tanggal)->translatedFormat('d M Y'),
-                ];
-            });
+            return (object)[
+                'id'         => $row->id,
+                'invoice'    => $row->nomor,
+                'nama'       => $row->nama,
+                'jenis'      => $jenisLabel,
+                'nominal'    => $row->total_uang,
+                'status'     => $row->status,
+                'tanggal'    => Carbon::parse($row->tanggal)->translatedFormat('d M Y'),
+                'input_by'   => $row->creator ? $row->creator->name : 'Donatur', // ← info siapa yang input
+            ];
+        });
 
 
         // ── 3. STATISTIK PER JENIS (bulan ini) ────────────────────

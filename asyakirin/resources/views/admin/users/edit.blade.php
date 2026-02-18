@@ -28,18 +28,24 @@
         .form-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
         .form-input, .form-select { width: 100%; border: 1px solid #d3e8da; border-radius: 9px; padding: 10px 14px; font-size: 13.5px; background: #f8fdf9; color: #333; outline: none; font-family: inherit; }
         .form-input:focus, .form-select:focus { border-color: #1a6b3c; background: #fff; }
+        .form-input[readonly] { background: #f3f4f6; color: #888; cursor: not-allowed; }
         .form-error { font-size: 12px; color: #b91c1c; margin-top: 4px; }
         .btn-primary { background: linear-gradient(135deg, #22813f, #1a6b3c); color: #fff; border: none; border-radius: 9px; padding: 11px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .2s; }
         .btn-primary:hover { opacity: .88; }
         .btn-secondary { background: #f1f7f3; color: #555; border: 1px solid #d3e8da; border-radius: 9px; padding: 11px 24px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; }
         .btn-secondary:hover { background: #daf0e4; }
         .form-actions { display: flex; gap: 10px; margin-top: 28px; }
-        .info-box { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 14px; font-size: 12.5px; color: #854d0e; margin-bottom: 20px; }
+        .info-box { border-radius: 10px; padding: 14px; font-size: 12.5px; margin-bottom: 20px; }
+        .info-box.warning { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+        .info-box.info    { background: #e0f2fe; border: 1px solid #7dd3fc; color: #075985; }
+        .source-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .source-badge.admins { background: #f3e8fd; color: #7c3aed; }
+        .source-badge.users  { background: #e0f2fe; color: #075985; }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR (copy dari create) -->
+<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-logo flex items-center gap-3">
         <div style="width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
@@ -57,9 +63,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
         </a>
-        <!-- Menu Kelola Akun - HANYA TAMPIL UNTUK ADMIN -->
-        @if(auth()->check() && auth()->user()->role === 'admin')
-        <a href="{{ route('admin.users.index') }}" class="nav-item">
+        @if((auth('admin')->check() && auth('admin')->user()->role === 'admin') || (auth('web')->check() && auth('web')->user()->role === 'admin'))
+        <a href="{{ route('admin.users.index') }}" class="nav-item active">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
@@ -117,14 +122,24 @@
 
     <h1 class="page-title">Edit <span>Akun</span></h1>
 
-    <div class="info-box">
+    {{-- Info tabel sumber --}}
+    <div class="info-box info" style="display:flex;align-items:center;gap:10px;">
+        ℹ️ Mengedit akun dari tabel:
+        <span class="source-badge {{ $user->source ?? 'admins' }}">
+            {{ ($user->source ?? 'admins') === 'admins' ? '🔐 Admins' : '👤 Users' }}
+        </span>
+    </div>
+
+    <div class="info-box warning">
         ⚠️ Kosongkan field password jika tidak ingin mengubahnya.
     </div>
 
     <div class="form-card">
-        <form action="{{ route('admin.users.update', $user) }}" method="POST">
+        <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
             @csrf
             @method('PUT')
+            {{-- Kirim info tabel sumber agar controller tahu update ke mana --}}
+            <input type="hidden" name="source" value="{{ $user->source ?? 'admins' }}">
 
             <div class="form-group">
                 <label class="form-label">Nama Lengkap *</label>
@@ -147,7 +162,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Password Baru (opsional)</label>
+                <label class="form-label">Password Baru <span style="color:#aaa;font-weight:400;">(opsional)</span></label>
                 <input type="password" name="password" class="form-input"
                        placeholder="Kosongkan jika tidak ingin ubah password">
                 @error('password')
@@ -165,19 +180,23 @@
                 <label class="form-label">Role *</label>
                 <select name="role" class="form-select" required>
                     <option value="">-- Pilih Role --</option>
-                    <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="admin"    {{ old('role', $user->role) === 'admin'    ? 'selected' : '' }}>Admin</option>
                     <option value="pengurus" {{ old('role', $user->role) === 'pengurus' ? 'selected' : '' }}>Pengurus</option>
                 </select>
                 @error('role')
                 <div class="form-error">{{ $message }}</div>
                 @enderror
+                <div style="font-size:12px;color:#888;margin-top:4px;">
+                    • <strong>Admin:</strong> Akses penuh ke semua fitur termasuk kelola akun<br>
+                    • <strong>Pengurus:</strong> Akses terbatas, bisa input data zakat
+                </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Status *</label>
                 <select name="is_active" class="form-select" required>
-                    <option value="1" {{ old('is_active', $user->is_active) == 1 ? 'selected' : '' }}>Aktif</option>
-                    <option value="0" {{ old('is_active', $user->is_active) == 0 ? 'selected' : '' }}>Nonaktif</option>
+                    <option value="1" {{ old('is_active', $user->is_active) == 1 ? 'selected' : '' }}>✅ Aktif</option>
+                    <option value="0" {{ old('is_active', $user->is_active) == 0 ? 'selected' : '' }}>❌ Nonaktif</option>
                 </select>
                 @error('is_active')
                 <div class="form-error">{{ $message }}</div>

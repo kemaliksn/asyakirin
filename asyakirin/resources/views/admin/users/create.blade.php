@@ -58,7 +58,7 @@
             Dashboard
         </a>
         <!-- Menu Kelola Akun - HANYA TAMPIL UNTUK ADMIN -->
-        @if(auth()->check() && auth()->user()->role === 'admin')
+        @if((auth('admin')->check() && auth('admin')->user()->role === 'admin') || (auth('web')->check() && auth('web')->user()->role === 'admin'))
         <a href="{{ route('admin.users.index') }}" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -173,6 +173,22 @@
                 <div style="font-size:12px;color:#888;margin-top:4px;">
                     • <strong>Admin:</strong> Akses penuh ke semua fitur<br>
                     • <strong>Pengurus:</strong> Akses terbatas sesuai kebutuhan
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Simpan ke Tabel *</label>
+                <select name="tabel" class="form-select" required>
+                    <option value="">-- Pilih Tabel --</option>
+                    <option value="admins"  {{ old('tabel') === 'admins'  ? 'selected' : '' }}>🔐 Admins (login via /admin/login)</option>
+                    <option value="users"   {{ old('tabel') === 'users'   ? 'selected' : '' }}>👤 Users (login via /admin/login & form zakat)</option>
+                </select>
+                @error('tabel')
+                <div class="form-error">{{ $message }}</div>
+                @enderror
+                <div style="font-size:12px;color:#888;margin-top:4px;">
+                    • <strong>Admins:</strong> Akun khusus dashboard, tidak bisa akses form zakat publik<br>
+                    • <strong>Users:</strong> Bisa login ke dashboard <em>dan</em> isi form zakat atas nama donatur
                 </div>
             </div>
 

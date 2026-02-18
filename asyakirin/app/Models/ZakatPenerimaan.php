@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Admin;
+
 class ZakatPenerimaan extends Model
 {
     protected $table = 'zakat_penerimaans';
@@ -11,6 +13,7 @@ class ZakatPenerimaan extends Model
     protected $fillable = [
         'nomor',
         'nama',
+        'created_by',
         'alamat',
         'telpon',
         'profesi',
@@ -26,6 +29,15 @@ class ZakatPenerimaan extends Model
         'tahun',
     ];
 
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
+    }
+
+    public function isInputByPengurus(): bool
+    {
+        return $this->created_by !== null;
+    }
     // Otomatis decode JSON saat diakses
     protected $casts = [
         'atas_nama' => 'array',

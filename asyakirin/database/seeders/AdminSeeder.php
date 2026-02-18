@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Admin;
 
 class AdminSeeder extends Seeder
 {
@@ -20,6 +21,13 @@ class AdminSeeder extends Seeder
             'email_verified_at' => now(),
             'created_at'        => now(),
             'updated_at'        => now(),
+        ]);
+
+        Admin::create([
+            'name'     => 'Admin Utama',
+            'email'    => 'admin@asy-syaakiriin.com',
+            'password' => Hash::make('password123'),
+            'role'     => 'admin',
         ]);
 
         $this->command->info('✅ Akun admin berhasil dibuat:');

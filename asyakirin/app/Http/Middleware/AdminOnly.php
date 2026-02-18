@@ -4,20 +4,23 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminOnly
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        // Cek apakah user login dan role-nya admin
-        if (!auth()->check() || auth()->user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.');
+        // Cek dari guard 'admin' (tabel admins)
+        if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role === 'admin') {
+            return $next($request);
         }
 
-        return $next($request);
+        // Cek dari guard 'web' (tabel users)
+        if (Auth::guard('web')->check() && Auth::guard('web')->user()->role === 'admin') {
+            return $next($request);
+        }
+
+        abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.');
     }
 }

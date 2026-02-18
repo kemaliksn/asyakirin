@@ -46,6 +46,9 @@ return new class extends Migration
             // 2 digit tahun untuk grouping nomor per tahun (ex: "26")
             $table->char('tahun', 2)->index();
 
+            // ✅ Siapa yang input data (NULL = donatur langsung, ada isi = pengurus/admin)
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamps();
         });
     }

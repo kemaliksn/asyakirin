@@ -8,16 +8,21 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminAuth
 {
-    /**
-     * Kalau belum login → redirect ke halaman login admin.
-     */
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check()) {
-            return redirect()->route('admin.login')
-                ->with('error', 'Silakan login terlebih dahulu.');
+        // Cek guard 'admin' (tabel admins)
+        if (Auth::guard('admin')->check()) {
+            return $next($request);
         }
 
-        return $next($request);
+        // Cek guard 'web' (tabel users) dengan role admin/pengurus
+        if (Auth::guard('web')->check()) {
+            $role = Auth::guard('web')->user()->role;
+            if (in_array($role, ['admin', 'pengurus'])) {
+                return $next($request);
+            }
+        }
+
+        return redirect()->route('admin.login');
     }
 }

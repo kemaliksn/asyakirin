@@ -10,6 +10,33 @@
 <body class="bg-gray-100">
 
 <div class="max-w-4xl mx-auto py-10 px-6">
+    @guest('web')
+    <div class="mb-4 text-right">
+        <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold">
+            🔐 Login sebagai Pengurus
+        </a>
+    </div>
+    @else
+    <div class="mb-4 bg-green-50 border border-green-200 rounded p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Anda sedang mengisi atas nama donatur sebagai:</p>
+                <p class="font-bold text-green-700">👤 {{ auth('web')->user()->name }} ({{ ucfirst(auth('web')->user()->role) }})</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{{ route('admin.dashboard') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold">
+                    🏠 Dashboard
+                </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-semibold">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endguest
 
     <div class="bg-white shadow-lg rounded-lg p-8">
 
