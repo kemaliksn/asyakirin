@@ -5,6 +5,7 @@ use App\Http\Controllers\ZakatController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\RekapController;
+use App\Http\Controllers\UserController;
 
 // ══════════════════════════════════════════════
 //  PUBLIK — Form Zakat (tidak perlu login)
@@ -60,6 +61,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/akun', function () {
             return view('admin.akun');
         })->name('akun');
+
+        // ✅ Kelola Akun
+        Route::resource('users', UserController::class);
+        Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
+
+        // ✅ Kelola Akun - HANYA ADMIN
+        Route::middleware('admin.only')->group(function () {
+        Route::resource('users', UserController::class);
+        Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
+    });
 
         // Logout
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
