@@ -95,7 +95,7 @@ td.f-rek     { width:32%; line-height:1.8; }
 <table class="header" cellspacing="0" cellpadding="0">
 <tr>
     <td style="width:68pt; padding:8pt 4pt 8pt 10pt;">
-        <img style="width:60pt;height:60pt;" src="{{ public_path('images/logo-yayasan.png') }}" alt="">
+        <img style="width:60pt;height:60pt;" src="{{ public_path('icons/logomasjid.png') }}" alt="">
     </td>
     <td>
         <div class="h-title">TANDA TERIMA ZAKAT INFAQ SHODAQOH (ZIS)</div>

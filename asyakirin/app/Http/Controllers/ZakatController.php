@@ -40,6 +40,10 @@ class ZakatController extends Controller
         $terbilang = ZakatHelper::terbilang($totalUang);
         $tahun     = date('y');
 
+        // ✅ Ambil ID pengurus di LUAR transaction (sebelum closure)
+        // auth('web') karena pengurus login via guard web di form zakat
+        $createdBy = auth('web')->id(); // NULL kalau donatur langsung (guest)
+
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         $zakat = DB::transaction(function () use (
             $request,
@@ -47,7 +51,8 @@ class ZakatController extends Controller
             $totalUang,
             $totalBeras,
             $terbilang,
-            $tahun
+            $tahun,
+            $createdBy  // ← pass ke dalam closure
         ) {
 
             $last = ZakatPenerimaan::where('tahun', $tahun)
@@ -81,7 +86,7 @@ class ZakatController extends Controller
                 'tahun'       => $tahun,
 
                 // ✅ Auto-detect: kalau ada user login = pengurus, kalau tidak = donatur langsung
-                'created_by'  => auth('web')->id(), // NULL kalau guest, ID pengurus kalau login
+                'created_by'  => $createdBy, // NULL kalau donatur langsung, ID pengurus kalau login
             ]);
         });
 
