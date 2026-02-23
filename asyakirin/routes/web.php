@@ -58,52 +58,56 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
 
-    // ── KASIR routes (isi form, upload bukti, export) ──
-    Route::middleware([\App\Http\Middleware\KasirRole::class])->group(function () {
-        Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
-        Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
-    });
-
-    // ── PENGURUS routes (view-only dashboard) ──
-    Route::middleware([\App\Http\Middleware\PengurusRole::class])->group(function () {
-        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
-        Route::get('/transaksi', function () {
-            return view('admin.transaksi');
-        })->name('transaksi');
-        Route::get('/transaksi/{id}', function ($id) {
-            return view('admin.transaksi-detail', ['id' => $id]);
-        })->name('transaksi.show');
-    });
-
-    // ── ADMIN routes (full access) ──
-    Route::middleware([\App\Http\Middleware\AdminOnly::class])->group(function () {
-        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/transaksi', function () {
-            return view('admin.transaksi');
-        })->name('transaksi');
-        Route::get('/transaksi/{id}', function ($id) {
-            return view('admin.transaksi-detail', ['id' => $id]);
-        })->name('transaksi.show');
-        Route::get('/laporan', function () {
-            return view('admin.laporan');
-        })->name('laporan');
-        Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
-        Route::get('/settings', function () {
-            return view('admin.settings');
-        })->name('settings');
-        Route::get('/akun', function () {
-            return view('admin.akun');
-        })->name('akun');
-        Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
-        Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
-        Route::resource('users', UserController::class);
-        Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
-    });
-
-    // ── Protected routes (harus login - untuk akses bersama) ──
+    // ── Protected routes (harus login terlebih dahulu) ──
     Route::middleware('admin.auth')->group(function () {
+
+        // ── Dashboard untuk SEMUA ROLE ──
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        // ── KASIR routes (isi form, upload bukti, export) ──
+        Route::middleware([\App\Http\Middleware\KasirRole::class])->group(function () {
+            Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
+            Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
+        });
+
+        // ── PENGURUS routes (view-only dashboard) ──
+        Route::middleware([\App\Http\Middleware\PengurusRole::class])->group(function () {
+            Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
+            Route::get('/transaksi', function () {
+                return view('admin.transaksi');
+            })->name('transaksi');
+            Route::get('/transaksi/{id}', function ($id) {
+                return view('admin.transaksi-detail', ['id' => $id]);
+            })->name('transaksi.show');
+        });
+
+        // ── ADMIN routes (full access) ──
+        Route::middleware([\App\Http\Middleware\AdminOnly::class])->group(function () {
+            Route::get('/transaksi', function () {
+                return view('admin.transaksi');
+            })->name('transaksi');
+            Route::get('/transaksi/{id}', function ($id) {
+                return view('admin.transaksi-detail', ['id' => $id]);
+            })->name('transaksi.show');
+            Route::get('/laporan', function () {
+                return view('admin.laporan');
+            })->name('laporan');
+            Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
+            Route::get('/settings', function () {
+                return view('admin.settings');
+            })->name('settings');
+            Route::get('/akun', function () {
+                return view('admin.akun');
+            })->name('akun');
+            Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
+            Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
+            Route::resource('users', UserController::class);
+            Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
+        });
+
+        // ── Logout (bersama untuk semua role) ──
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
     });
 
 });
