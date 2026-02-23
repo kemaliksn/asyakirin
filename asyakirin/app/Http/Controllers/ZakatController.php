@@ -17,6 +17,16 @@ class ZakatController extends Controller
 
     public function exportPdf(Request $request)
     {
+        // validasi minimal seeprti isi form dan bukti
+        $request->validate([
+            'nama'        => 'required|string|max:100',
+            'jumlah_jiwa' => 'required|integer|min:1',
+            'jenis'       => 'required|array|min:1',
+            'uang'        => 'array',
+            'beras'       => 'array',
+            'bukti'       => 'required|image|max:2048',
+        ]);
+
         $items      = [];
         $totalUang  = 0;
         $totalBeras = 0;
@@ -45,6 +55,12 @@ class ZakatController extends Controller
         $createdBy = auth('web')->id(); // NULL kalau donatur langsung (guest)
 
         // 🔥 SIMPAN DULU DALAM TRANSACTION
+        // jika ada file bukti, simpan terlebih dahulu
+        $buktiPath = null;
+        if ($request->hasFile('bukti')) {
+            $buktiPath = $request->file('bukti')->store('bukti', 'public');
+        }
+
         $zakat = DB::transaction(function () use (
             $request,
             $items,
@@ -52,7 +68,8 @@ class ZakatController extends Controller
             $totalBeras,
             $terbilang,
             $tahun,
-            $createdBy  // ← pass ke dalam closure
+            $createdBy,  // ← pass ke dalam closure
+            $buktiPath
         ) {
 
             $last = ZakatPenerimaan::where('tahun', $tahun)
@@ -87,6 +104,7 @@ class ZakatController extends Controller
 
                 // ✅ Auto-detect: kalau ada user login = pengurus, kalau tidak = donatur langsung
                 'created_by'  => $createdBy, // NULL kalau donatur langsung, ID pengurus kalau login
+                'bukti'       => $buktiPath,
             ]);
         });
 

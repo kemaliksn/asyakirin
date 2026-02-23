@@ -44,7 +44,7 @@
             Masuk Zakat
         </h1>
 
-        <form method="POST" action="{{ route('export.pdf') }}" id="zakatForm">
+        <form method="POST" action="{{ route('export.pdf') }}" id="zakatForm" enctype="multipart/form-data">
             @php use Illuminate\Support\Str; @endphp
 
             <input type="hidden" name="form_token" value="{{ Str::uuid() }}">
@@ -392,10 +392,17 @@
                 </p>
             </div>
 
+            <!-- section yang muncul saat user tekan lanjut untuk upload bukti -->
+            <div id="buktiSection" class="hidden mt-4">
+                <label class="block mb-2 font-medium">Unggah Bukti Pembayaran</label>
+                <input type="file" name="bukti" id="buktiInput" accept="image/*" class="border p-2 rounded w-full">
+                <p class="text-sm text-gray-600 mt-1">Foto / screenshot transaksi</p>
+            </div>
+
             <!-- BUTTON -->
             <button
                 type="button"
-                onclick="validateForm(this)"
+                onclick="handlePayment(this)"
                 class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded text-lg font-semibold"
             >
                 LANJUTKAN PEMBAYARAN
@@ -412,7 +419,14 @@
 
         let errors = [];
 
-        // validasi kamu tetap
+        // user harus memilih bukti ketika form pengupload sudah terlihat
+        const buktiInput = document.getElementById('buktiInput');
+        const buktiSection = document.getElementById('buktiSection');
+        if (!buktiSection.classList.contains('hidden')) {
+            if (!buktiInput.files || buktiInput.files.length === 0) {
+                errors.push('Bukti pembayaran belum diunggah');
+            }
+        }
 
         if (errors.length > 0) {
             alert("⚠️ Data belum lengkap:\n\n- " + errors.join("\n- "));
@@ -424,6 +438,18 @@
         button.innerText = "Memproses...";
 
         document.getElementById('zakatForm').submit();
+    }
+
+    function handlePayment(button) {
+        const buktiSection = document.getElementById('buktiSection');
+        if (buktiSection.classList.contains('hidden')) {
+            // tampilkan form upload saja
+            buktiSection.classList.remove('hidden');
+            button.innerText = 'UPLOAD BUKTI & CETAK';
+            return;
+        }
+        // kalau sudah terbuka, lanjut ke validasi / submit
+        validateForm(button);
     }
 
 </script>
