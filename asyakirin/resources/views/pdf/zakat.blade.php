@@ -225,7 +225,7 @@ td.f-rek     { width:32%; line-height:1.8; }
     <td class="b-sign">
         <div class="sign-city">Jakarta,&nbsp;<span class="sign-line">&nbsp;{{ $data['tanggal'] ?? '' }}</span></div>
         <div class="sign-amil">Amil / Penerima,</div>
-        <div class="sign-box">({{ $data['nama_amil'] ?? '' }})</div>
+        <div class="sign-box">({{ $data['nama_amil'] ?: 'Admin UPZ' }})</div>
     </td>
 </tr>
 </table>

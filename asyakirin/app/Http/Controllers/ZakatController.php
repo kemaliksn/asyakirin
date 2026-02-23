@@ -54,6 +54,9 @@ class ZakatController extends Controller
         // auth('web') karena pengurus login via guard web di form zakat
         $createdBy = auth('web')->id(); // NULL kalau donatur langsung (guest)
 
+        // nama amil default berasal dari user yang login, jika tidak ada gunakan input manual atau kosong
+        $namaAmil = auth('web')->check() ? auth('web')->user()->name : ($request->nama_amil ?? '');
+
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         // jika ada file bukti, simpan terlebih dahulu
         $buktiPath = null;
@@ -69,7 +72,8 @@ class ZakatController extends Controller
             $terbilang,
             $tahun,
             $createdBy,  // ← pass ke dalam closure
-            $buktiPath
+            $buktiPath,
+            $namaAmil
         ) {
 
             $last = ZakatPenerimaan::where('tahun', $tahun)
@@ -98,7 +102,7 @@ class ZakatController extends Controller
                 'total_uang'  => (int) $totalUang,
                 'total_beras' => $totalBeras,
                 'terbilang'   => $terbilang,
-                'nama_amil'   => $request->nama_amil ?? '',
+                'nama_amil'   => $namaAmil,
                 'tanggal'     => now()->toDateString(),
                 'tahun'       => $tahun,
 
@@ -122,7 +126,6 @@ class ZakatController extends Controller
             'tanggal'     => now()->isoFormat('D MMMM Y'),
             'nama_amil'   => $zakat->nama_amil,
         ];
-
         $pdf = Pdf::loadView('pdf.zakat', compact('data'))
             ->setPaper('A4', 'landscape');
 
