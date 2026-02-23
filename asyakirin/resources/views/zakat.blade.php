@@ -116,6 +116,9 @@
 
             <!-- SCRIPT ZAKAT -->
             <script>
+                // nilai default per jiwa diambil dari konfigurasi
+                const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 30000) }};
+
                 function updateTable() {
 
                     let tbody = document.getElementById('tableBody');
@@ -133,21 +136,47 @@
                             let row = document.createElement("tr");
                             row.id = 'row-' + cb.value;
 
-                            row.innerHTML = `
-                                <td class="border p-2 row-no"></td>
-                                <td class="border p-2">
-                                    ${cb.value}
-                                    <input type="hidden" name="jenis[]" value="${cb.value}">
-                                </td>
-                                <td class="border p-2">
-                                    <input type="number" name="uang[]" class="uang w-full p-1 border rounded" oninput="hitungTotal()">
-                                </td>
-                                <td class="border p-2">
-                                    <input type="number" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
-                                </td>
-                            `;
+                            if (cb.value === 'Zakat Fitrah') {
+                                // row spesial: input rate dan hitung total otomatis
+                                row.innerHTML = `
+                                    <td class="border p-2 row-no"></td>
+                                    <td class="border p-2">
+                                        Zakat Fitrah
+                                        <input type="hidden" name="jenis[]" value="Zakat Fitrah">
+                                    </td>
+                                    <td class="border p-2">
+                                        <div class="flex flex-col">
+                                            <input type="number" name="fitrah_rate[]" class="fitrah-rate w-full p-1 border rounded" placeholder="Rp per jiwa" value="${DEFAULT_FITRAH_RATE}" oninput="updateFitrah()">
+                                            <span class="text-sm text-gray-500 mt-1">Total: Rp <span class="fitrah-total">0</span></span>
+                                            <input type="hidden" name="uang[]" class="uang">
+                                        </div>
+                                    </td>
+                                    <td class="border p-2">
+                                        <input type="number" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
+                                    </td>
+                                `;
+                            } else {
+                                // row biasa
+                                row.innerHTML = `
+                                    <td class="border p-2 row-no"></td>
+                                    <td class="border p-2">
+                                        ${cb.value}
+                                        <input type="hidden" name="jenis[]" value="${cb.value}">
+                                    </td>
+                                    <td class="border p-2">
+                                        <input type="number" name="uang[]" class="uang w-full p-1 border rounded" oninput="hitungTotal()">
+                                    </td>
+                                    <td class="border p-2">
+                                        <input type="number" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
+                                    </td>
+                                `;
+                            }
 
                             tbody.appendChild(row);
+
+                            if (cb.value === 'Zakat Fitrah') {
+                                updateFitrah();
+                            }
                         }
 
                         // Jika tidak dicentang & ada row → hapus
@@ -425,6 +454,21 @@
     const wrapper = document.getElementById('atasNamaWrapper');
     const container = document.getElementById('atasNamaContainer');
 
+    function updateFitrah() {
+        let jumlah = parseInt(jumlahJiwaInput.value) || 0;
+        let fitrahRow = document.getElementById('row-Zakat Fitrah');
+        if (fitrahRow) {
+            let rateInput = fitrahRow.querySelector('.fitrah-rate');
+            let totalSpan = fitrahRow.querySelector('.fitrah-total');
+            let uangInput = fitrahRow.querySelector('input[name="uang[]"]');
+            let rate = parseInt(rateInput.value) || 0;
+            let total = rate * jumlah;
+            totalSpan.innerText = new Intl.NumberFormat('id-ID').format(total);
+            uangInput.value = total;
+        }
+        hitungTotal();
+    }
+
     jumlahJiwaInput.addEventListener('input', function () {
 
         let jumlah = parseInt(this.value) || 0;
@@ -435,7 +479,7 @@
 
             wrapper.classList.remove('hidden');
 
-            for (let i = 1; i <= jumlah; i++) {
+            for (let i = 2; i <= jumlah; i++) {
 
                 let input = document.createElement("input");
                 input.type = "text";
@@ -450,6 +494,9 @@
             wrapper.classList.add('hidden');
         }
 
+        // jika fitrah sudah dicentang, hitung ulang
+        updateFitrah();
+        hitungTotal();
     });
 </script>
 
