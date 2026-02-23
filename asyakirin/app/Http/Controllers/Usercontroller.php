@@ -21,8 +21,8 @@ class UserController extends Controller
             return $a;
         });
 
-        // Ambil dari tabel users (role admin/pengurus saja)
-        $users = User::whereIn('role', ['admin', 'pengurus'])
+        // Ambil dari tabel users (role admin/kasir/pengurus saja)
+        $users = User::whereIn('role', ['admin', 'kasir', 'pengurus'])
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($u) {
@@ -72,7 +72,7 @@ class UserController extends Controller
                 },
             ],
             'password' => ['required', 'confirmed', Password::min(8)],
-            'role'     => 'required|in:admin,pengurus',
+            'role'     => 'required|in:admin,kasir,pengurus',
             'tabel'    => 'required|in:admins,users', // pilih simpan ke tabel mana
         ]);
 
@@ -142,7 +142,7 @@ class UserController extends Controller
                 },
             ],
             'password'  => ['nullable', 'confirmed', Password::min(8)],
-            'role'      => 'required|in:admin,pengurus',
+            'role'      => 'required|in:admin,kasir,pengurus',
             'is_active' => 'required|boolean',
         ]);
 

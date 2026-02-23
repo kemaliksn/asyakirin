@@ -181,6 +181,7 @@
                 <select name="role" class="form-select" required>
                     <option value="">-- Pilih Role --</option>
                     <option value="admin"    {{ old('role', $user->role) === 'admin'    ? 'selected' : '' }}>Admin</option>
+                    <option value="kasir"    {{ old('role', $user->role) === 'kasir'    ? 'selected' : '' }}>Kasir</option>
                     <option value="pengurus" {{ old('role', $user->role) === 'pengurus' ? 'selected' : '' }}>Pengurus</option>
                 </select>
                 @error('role')
@@ -188,7 +189,8 @@
                 @enderror
                 <div style="font-size:12px;color:#888;margin-top:4px;">
                     • <strong>Admin:</strong> Akses penuh ke semua fitur termasuk kelola akun<br>
-                    • <strong>Pengurus:</strong> Akses terbatas, bisa input data zakat
+                    • <strong>Kasir:</strong> Input form, upload bukti, export rekapan harian<br>
+                    • <strong>Pengurus:</strong> Akses terbatas, hanya view dashboard & rekap
                 </div>
             </div>
 

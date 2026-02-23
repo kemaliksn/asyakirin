@@ -35,6 +35,7 @@
         table.data-table tbody tr:hover { background: #f8fdf9; }
         .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
         .badge.admin    { background: #fef3c7; color: #92400e; }
+        .badge.kasir    { background: #fed7aa; color: #9a3412; }
         .badge.pengurus { background: #dbeafe; color: #1e40af; }
         .badge.active   { background: #dcfce7; color: #15803d; }
         .badge.inactive { background: #fee2e2; color: #b91c1c; }

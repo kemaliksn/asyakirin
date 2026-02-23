@@ -38,10 +38,12 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
+// Form Zakat (publik + kasir + admin)
 Route::get('/', function () {
     return view('zakat');
 });
 
+// Export PDF dan cetak (hanya kasir dan admin, dari form publik atau admin)
 Route::post('/zakat/export-pdf', [ZakatController::class, 'exportPdf'])->name('export.pdf');
 Route::get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
 
@@ -56,55 +58,52 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
 
-    // ── Protected routes (harus login) ──
-    Route::middleware('admin.auth')->group(function () {
+    // ── KASIR routes (isi form, upload bukti, export) ──
+    Route::middleware([\App\Http\Middleware\KasirRole::class])->group(function () {
+        Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
+        Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
+    });
 
-        // Dashboard
+    // ── PENGURUS routes (view-only dashboard) ──
+    Route::middleware([\App\Http\Middleware\PengurusRole::class])->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-        // Transaksi
+        Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
         Route::get('/transaksi', function () {
             return view('admin.transaksi');
         })->name('transaksi');
-
         Route::get('/transaksi/{id}', function ($id) {
             return view('admin.transaksi-detail', ['id' => $id]);
         })->name('transaksi.show');
+    });
 
-        // Laporan
+    // ── ADMIN routes (full access) ──
+    Route::middleware([\App\Http\Middleware\AdminOnly::class])->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/transaksi', function () {
+            return view('admin.transaksi');
+        })->name('transaksi');
+        Route::get('/transaksi/{id}', function ($id) {
+            return view('admin.transaksi-detail', ['id' => $id]);
+        })->name('transaksi.show');
         Route::get('/laporan', function () {
             return view('admin.laporan');
         })->name('laporan');
-
-        // Rekap
         Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
-
-        // Settings
         Route::get('/settings', function () {
             return view('admin.settings');
         })->name('settings');
-
-        // Akun
         Route::get('/akun', function () {
             return view('admin.akun');
         })->name('akun');
-
         Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
         Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
-
-        // ✅ Kelola Akun
         Route::resource('users', UserController::class);
         Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
+    });
 
-        // ✅ Kelola Akun - HANYA ADMIN
-        Route::middleware('admin.only')->group(function () {
-        Route::resource('users', UserController::class);
-        Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
-        });
-
-        // Logout
+    // ── Protected routes (harus login - untuk akses bersama) ──
+    Route::middleware('admin.auth')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-
     });
 
 });
