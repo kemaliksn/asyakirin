@@ -102,9 +102,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // ── ADMIN routes (full access) ──
         Route::middleware([\App\Http\Middleware\AdminOnly::class])->group(function () {
             // transaksi is already registered above; admin may also edit via same update routes
-            Route::get('/laporan', function () {
-                return view('admin.laporan');
-            })->name('laporan');
+            Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'index'])->name('laporan');
             Route::get('/settings', function () {
                 return view('admin.settings');
             })->name('settings');
