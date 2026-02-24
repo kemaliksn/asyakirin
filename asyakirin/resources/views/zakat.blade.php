@@ -19,7 +19,7 @@
     <div class="mb-4 text-right">
         <a href="{{ route('login') }}"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold">
-            🔐 Login sebagai Pengurus
+            🔐 Login sebagai Petugas
         </a>
     </div>
     @else
@@ -36,7 +36,7 @@
                     </p>
                 @else
                     <p class="font-bold text-green-700">
-                        👤 {{ $user->name }} ({{ ucfirst($user->role) }})
+                        👤 {{ $user->name }} (Petugas)
                     </p>
                 @endif
             </div>

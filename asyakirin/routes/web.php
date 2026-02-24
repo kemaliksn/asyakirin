@@ -22,7 +22,7 @@ Route::get('/login', function () {
 
 Route::post('/login', function (Request $request) {
     $credentials = $request->only('email', 'password');
-    $credentials['role'] = 'pengurus'; // hanya role pengurus
+    $credentials['role'] = 'kasir'; // hanya role pengurus
 
     if (Auth::guard('admin')->attempt($credentials)) {
         $request->session()->regenerate();
