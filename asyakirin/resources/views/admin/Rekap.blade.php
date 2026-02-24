@@ -359,6 +359,7 @@
                         <th>Jenis</th>
                         <th>Nominal</th>
                         <th>Status</th>
+                        <th>Input oleh</th>
                         <th>Tanggal</th>
                         <th>Aksi</th>
                     </tr>
@@ -398,6 +399,13 @@
                             @endphp
                             <span class="badge {{ $cls }}">{{ $row->status }}</span>
                         </td>
+                        <td>
+                            @if($row->input_by === 'Donatur')
+                                <span style="color:#888;font-size:12px;">🌐 Donatur Langsung</span>
+                            @else
+                                <span style="color:#1a6b3c;font-size:12px;font-weight:600;">👤 {{ $row->input_by }}</span>
+                            @endif
+                        </td>
                         <td style="color:#888;white-space:nowrap;">{{ $row->tanggal }}</td>
                         <td>
                             <a href="{{ route('admin.transaksi.show', $row->id) }}" class="btn-detail">Detail</a>
@@ -405,7 +413,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="empty-state">
                                 <div class="empty-state-icon">📭</div>
                                 <p>Tidak ada data untuk filter yang dipilih.</p>

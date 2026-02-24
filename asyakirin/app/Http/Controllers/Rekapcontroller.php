@@ -50,6 +50,7 @@ class RekapController extends Controller
 
         // ── Query transaksi dengan filter ──
         $query = ZakatPenerimaan::query()
+            ->with('creator') // load user who input record (if any)
             ->whereMonth('tanggal', $filterBulan)
             ->whereYear('tanggal', $filterTahun)
             ->orderBy('tanggal', 'desc')
@@ -81,14 +82,25 @@ class RekapController extends Controller
                     continue;
                 }
 
+                // determine who input the record
+                $creatorName = '-';
+                if ($record->created_by) {
+                    // relation may be loaded lazily
+                    $creatorName = optional($record->creator)->name ?: '-';
+                } else {
+                    // matches dashboard terminology
+                    $creatorName = 'Donatur';
+                }
+
                 $rows->push((object)[
-                    'id'      => $record->id,
-                    'invoice' => $record->nomor,
-                    'nama'    => $record->nama,
-                    'jenis'   => $jenis,
-                    'nominal' => $uang,
-                    'status'  => $record->status,
-                    'tanggal' => Carbon::parse($record->tanggal)->translatedFormat('d F Y'),
+                    'id'       => $record->id,
+                    'invoice'  => $record->nomor,
+                    'nama'     => $record->nama,
+                    'jenis'    => $jenis,
+                    'nominal'  => $uang,
+                    'status'   => $record->status,
+                    'tanggal'  => Carbon::parse($record->tanggal)->translatedFormat('d F Y'),
+                    'input_by' => $creatorName,
                 ]);
             }
         }

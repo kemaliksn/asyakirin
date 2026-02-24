@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminZakatController;
+use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Auth;
 
 // ══════════════════════════════════════════════
@@ -64,35 +65,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // ── Dashboard untuk SEMUA ROLE ──
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+        // rekap page – available to kasir, pengurus, and admin (all authenticated)
+        Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
+
         // ── KASIR routes (isi form, upload bukti, export) ──
         Route::middleware([\App\Http\Middleware\KasirRole::class])->group(function () {
             Route::get('/zakat/create', [AdminZakatController::class, 'create'])->name('zakat.create');
             Route::post('/zakat', [AdminZakatController::class, 'store'])->name('zakat.store');
         });
 
-        // ── PENGURUS routes (view-only dashboard) ──
-        Route::middleware([\App\Http\Middleware\PengurusRole::class])->group(function () {
-            Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
-            Route::get('/transaksi', function () {
-                return view('admin.transaksi');
-            })->name('transaksi');
-            Route::get('/transaksi/{id}', function ($id) {
-                return view('admin.transaksi-detail', ['id' => $id]);
-            })->name('transaksi.show');
-        });
+        // ── PENGURUS routes (view-only dashboard). transaksi index/show available to all authenticated roles
+        Route::get('/transaksi', [\App\Http\Controllers\TransaksiController::class, 'index'])->name('transaksi');
+        Route::get('/transaksi/{id}', [\App\Http\Controllers\TransaksiController::class, 'show'])->name('transaksi.show');
+
+        // update/delete actions will enforce admin/ kasir in controller itself
+        Route::put('/transaksi/{id}', [\App\Http\Controllers\TransaksiController::class, 'update'])->name('transaksi.update');
+        Route::delete('/transaksi/{id}', [\App\Http\Controllers\TransaksiController::class, 'destroy'])->name('transaksi.destroy');
 
         // ── ADMIN routes (full access) ──
         Route::middleware([\App\Http\Middleware\AdminOnly::class])->group(function () {
-            Route::get('/transaksi', function () {
-                return view('admin.transaksi');
-            })->name('transaksi');
-            Route::get('/transaksi/{id}', function ($id) {
-                return view('admin.transaksi-detail', ['id' => $id]);
-            })->name('transaksi.show');
+            // transaksi is already registered above; admin may also edit via same update routes
             Route::get('/laporan', function () {
                 return view('admin.laporan');
             })->name('laporan');
-            Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
             Route::get('/settings', function () {
                 return view('admin.settings');
             })->name('settings');

@@ -24,9 +24,9 @@
                 <p class="font-bold text-green-700">👤 {{ auth('web')->user()->name }} ({{ ucfirst(auth('web')->user()->role) }})</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold">
+                <!-- <a href="{{ route('admin.dashboard') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold">
                     🏠 Dashboard
-                </a>
+                </a> -->
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-semibold">
@@ -117,7 +117,7 @@
             <!-- SCRIPT ZAKAT -->
             <script>
                 // nilai default per jiwa diambil dari konfigurasi
-                const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 30000) }};
+                const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 30000)}};
 
                 function updateTable() {
 
