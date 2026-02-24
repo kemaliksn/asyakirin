@@ -58,12 +58,23 @@ class ZakatController extends Controller
         $terbilang = ZakatHelper::terbilang($totalUang);
         $tahun     = date('y');
 
-        // ✅ Ambil ID pengurus di LUAR transaction (sebelum closure)
-        // auth('web') karena pengurus login via guard web di form zakat
-        $createdBy = auth('web')->id(); // NULL kalau donatur langsung (guest)
+        // apakah ada siapa pun login (kasir atau admin) agar status bisa otomatis Lunas
+        $isLogged = auth('web')->check() || auth('admin')->check();
 
-        // nama amil default berasal dari user yang login, jika tidak ada gunakan input manual atau kosong
-        $namaAmil = auth('web')->check() ? auth('web')->user()->name : ($request->nama_amil ?? '');
+        // tangkap ID pengurus hanya dari guard web (kasir). admin tidak disimpan
+        $createdBy = auth('web')->check() ? auth('web')->id() : null;
+
+        // nama amil = nama user yang login (web atau admin) atau input manual
+        if (auth('web')->check()) {
+            $namaAmil = auth('web')->user()->name;
+        } elseif (auth('admin')->check()) {
+            $namaAmil = auth('admin')->user()->name;
+        } else {
+            $namaAmil = $request->nama_amil ?? '';
+        }
+        if (!$namaAmil) {
+            $namaAmil = 'Admin UPZ';
+        }
 
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         // jika ada file bukti, simpan terlebih dahulu
