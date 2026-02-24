@@ -17,15 +17,23 @@ class ZakatController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // validasi minimal seeprti isi form dan bukti
-        $request->validate([
+        // validasi minimal: selalu periksa keberadaan field utama. Bukti hanya wajib
+        // untuk donatur yang mengisi sendiri (tidak login sebagai kasir/admin).
+        $rules = [
             'nama'        => 'required|string|max:100',
             'jumlah_jiwa' => 'required|integer|min:1',
             'jenis'       => 'required|array|min:1',
             'uang'        => 'array',
             'beras'       => 'array',
-            'bukti'       => 'required|image|max:2048',
-        ]);
+        ];
+
+        if (auth('web')->check() || auth('admin')->check()) {
+            $rules['bukti'] = 'nullable|image|max:2048';
+        } else {
+            $rules['bukti'] = 'required|image|max:2048';
+        }
+
+        $request->validate($rules);
 
         $items      = [];
         $totalUang  = 0;
@@ -50,12 +58,23 @@ class ZakatController extends Controller
         $terbilang = ZakatHelper::terbilang($totalUang);
         $tahun     = date('y');
 
-        // ✅ Ambil ID pengurus di LUAR transaction (sebelum closure)
-        // auth('web') karena pengurus login via guard web di form zakat
-        $createdBy = auth('web')->id(); // NULL kalau donatur langsung (guest)
+        // apakah ada siapa pun login (kasir atau admin) agar status bisa otomatis Lunas
+        $isLogged = auth('web')->check() || auth('admin')->check();
 
-        // nama amil default berasal dari user yang login, jika tidak ada gunakan input manual atau kosong
-        $namaAmil = auth('web')->check() ? auth('web')->user()->name : ($request->nama_amil ?? '');
+        // tangkap ID pengurus hanya dari guard web (kasir). admin tidak disimpan
+        $createdBy = auth('web')->check() ? auth('web')->id() : null;
+
+        // nama amil = nama user yang login (web atau admin) atau input manual
+        if (auth('web')->check()) {
+            $namaAmil = auth('web')->user()->name;
+        } elseif (auth('admin')->check()) {
+            $namaAmil = auth('admin')->user()->name;
+        } else {
+            $namaAmil = $request->nama_amil ?? '';
+        }
+        if (!$namaAmil) {
+            $namaAmil = 'Admin UPZ';
+        }
 
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         // jika ada file bukti, simpan terlebih dahulu
@@ -71,6 +90,7 @@ class ZakatController extends Controller
             $totalBeras,
             $terbilang,
             $tahun,
+            $isLogged,
             $createdBy,  // ← pass ke dalam closure
             $buktiPath,
             $namaAmil
@@ -106,8 +126,11 @@ class ZakatController extends Controller
                 'tanggal'     => now()->toDateString(),
                 'tahun'       => $tahun,
 
-                // ✅ Auto-detect: kalau ada user login = pengurus, kalau tidak = donatur langsung
-                'created_by'  => $createdBy, // NULL kalau donatur langsung, ID pengurus kalau login
+                // status otomatis berdasarkan login
+                'status'      => $isLogged ? 'Lunas' : 'Belum Lunas',
+
+                // ✅ Auto-detect: kalau ada user login = kasir, kalau tidak = donatur langsung
+                'created_by'  => $createdBy, // NULL kalau donatur langsung, ID kasir kalau login
                 'bukti'       => $buktiPath,
             ]);
         });

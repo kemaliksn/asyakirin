@@ -88,8 +88,8 @@ class RekapController extends Controller
                     // relation may be loaded lazily
                     $creatorName = optional($record->creator)->name ?: '-';
                 } else {
-                    // matches dashboard terminology
-                    $creatorName = 'Donatur';
+                    // tidak ada created_by, gunakan nama_amil bila tersedia
+                    $creatorName = $record->nama_amil ?: 'Donatur';
                 }
 
                 $rows->push((object)[
