@@ -32,7 +32,7 @@
 
                 @if($admin)
                     <p class="font-bold text-green-700">
-                        👤 {{ $admin->name }} ({{ ucfirst($admin->role) }})
+                        👤 {{ $admin->name }} (Petugas)
                     </p>
                 @else
                     <p class="font-bold text-green-700">

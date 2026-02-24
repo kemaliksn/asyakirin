@@ -56,6 +56,7 @@ class ZakatController extends Controller
 
         // nama amil default berasal dari user yang login, jika tidak ada gunakan input manual atau kosong
         $namaAmil = auth('web')->check() ? auth('web')->user()->name : ($request->nama_amil ?? '');
+        $namaAmil = auth('admin')->check() ? auth('admin')->user()->name : ($request->nama_amil ?? '');
 
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         // jika ada file bukti, simpan terlebih dahulu
