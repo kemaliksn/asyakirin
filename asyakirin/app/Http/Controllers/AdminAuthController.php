@@ -15,7 +15,7 @@ class AdminAuthController extends Controller
         }
 
         // Jika sudah login sebagai pengurus (tabel users)
-        if (Auth::guard('web')->check() && in_array(Auth::guard('web')->user()->role, ['admin', 'pengurus'])) {
+        if (Auth::guard('web')->check() && in_array(Auth::guard('web')->user()->role, ['kasir', 'pengurus'])) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -40,7 +40,7 @@ class AdminAuthController extends Controller
             $user = Auth::guard('web')->user();
 
             // Hanya izinkan role admin atau pengurus
-            if (in_array($user->role, ['admin', 'pengurus'])) {
+            if (in_array($user->role, ['admin', 'kasir', 'pengurus'])) {
                 $request->session()->regenerate();
                 return redirect()->route('admin.dashboard');
             }

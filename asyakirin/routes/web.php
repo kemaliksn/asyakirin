@@ -22,20 +22,37 @@ Route::get('/login', function () {
 
 Route::post('/login', function (Request $request) {
     $credentials = $request->only('email', 'password');
+    $credentials['role'] = 'pengurus'; // hanya role pengurus
+
+    if (Auth::guard('admin')->attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect('/');
+    }
 
     if (Auth::guard('web')->attempt($credentials)) {
         $request->session()->regenerate();
-        return redirect('/'); // ← redirect ke form zakat
+        return redirect('/');
     }
 
-    return back()->withErrors(['email' => 'Email atau password salah.']);
+    return back()->withErrors([
+        'email' => 'Akses hanya untuk pengurus atau data login salah.'
+    ]);
 })->name('login.submit');
 
 // Logout PUBLIK (donatur)
 Route::post('/logout', function (Request $request) {
-    Auth::guard('web')->logout();
+
+    if (Auth::guard('admin')->check()) {
+        Auth::guard('admin')->logout();
+    }
+
+    if (Auth::guard('web')->check()) {
+        Auth::guard('web')->logout();
+    }
+
     $request->session()->invalidate();
     $request->session()->regenerateToken();
+
     return redirect('/');
 })->name('logout');
 

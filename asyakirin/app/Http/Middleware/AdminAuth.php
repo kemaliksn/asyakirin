@@ -18,7 +18,7 @@ class AdminAuth
         // Cek guard 'web' (tabel users) dengan role admin/pengurus
         if (Auth::guard('web')->check()) {
             $role = Auth::guard('web')->user()->role;
-            if (in_array($role, ['admin', 'pengurus'])) {
+            if (in_array($role, ['kasir', 'pengurus'])) {
                 return $next($request);
             }
         }
