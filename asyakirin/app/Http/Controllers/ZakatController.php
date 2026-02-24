@@ -72,9 +72,7 @@ class ZakatController extends Controller
         } else {
             $namaAmil = $request->nama_amil ?? '';
         }
-        if (!$namaAmil) {
-            $namaAmil = 'Admin UPZ';
-        }
+
 
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         // jika ada file bukti, simpan terlebih dahulu
