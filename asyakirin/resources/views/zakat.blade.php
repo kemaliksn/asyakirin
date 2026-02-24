@@ -411,11 +411,13 @@
             </div>
 
             <!-- section yang muncul saat user tekan lanjut untuk upload bukti -->
+            @unless(auth('web')->check() || auth('admin')->check())
             <div id="buktiSection" class="hidden mt-4">
                 <label class="block mb-2 font-medium">Unggah Bukti Pembayaran</label>
-                <input type="file" name="bukti" id="buktiInput" accept="image/*" class="border p-2 rounded w-full">
+                <input type="file" name="bukti" id="buktiInput" accept="image/*" class="border p-2 rounded w/full">
                 <p class="text-sm text-gray-600 mt-1">Foto / screenshot transaksi</p>
             </div>
+            @endunless
 
             <!-- BUTTON -->
             <button
@@ -423,7 +425,7 @@
                 onclick="handlePayment(this)"
                 class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded text-lg font-semibold"
             >
-                LANJUTKAN PEMBAYARAN
+                {{ (auth('web')->check() || auth('admin')->check()) ? 'Simpan & Cetak' : 'LANJUTKAN PEMBAYARAN' }}
             </button>
 
 
@@ -437,6 +439,7 @@
 
         let errors = [];
 
+        @unless(auth('web')->check() || auth('admin')->check())
         // user harus memilih bukti ketika form pengupload sudah terlihat
         const buktiInput = document.getElementById('buktiInput');
         const buktiSection = document.getElementById('buktiSection');
@@ -445,6 +448,7 @@
                 errors.push('Bukti pembayaran belum diunggah');
             }
         }
+        @endunless
 
         if (errors.length > 0) {
             alert("⚠️ Data belum lengkap:\n\n- " + errors.join("\n- "));
@@ -459,6 +463,7 @@
     }
 
     function handlePayment(button) {
+        @unless(auth('web')->check() || auth('admin')->check())
         const buktiSection = document.getElementById('buktiSection');
         if (buktiSection.classList.contains('hidden')) {
             // tampilkan form upload saja
@@ -466,7 +471,8 @@
             button.innerText = 'UPLOAD BUKTI & CETAK';
             return;
         }
-        // kalau sudah terbuka, lanjut ke validasi / submit
+        @endunless
+        // lanjut ke validasi / submit
         validateForm(button);
     }
 
