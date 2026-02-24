@@ -114,7 +114,6 @@
     <div class="admin-chip">
         <div class="admin-avatar">{{ strtoupper(substr($currentUser->name ?? 'A', 0, 1)) }}</div>
         <span style="font-size:13px;font-weight:600;color:#222;">{{ $currentUser->name ?? 'Admin Ahmad' }}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:#888;"><path d="M19 9l-7 7-7-7"/></svg>
     </div>
 </header>
 

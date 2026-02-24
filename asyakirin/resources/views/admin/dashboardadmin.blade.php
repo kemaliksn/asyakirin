@@ -179,7 +179,6 @@
     <div class="admin-chip">
         <div class="admin-avatar">{{ strtoupper(substr($currentUser->name ?? 'A', 0, 1)) }}</div>
         <span class="admin-name">{{ $currentUser->name ?? 'Admin' }}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:#888;"><path d="M19 9l-7 7-7-7"/></svg>
     </div>
 </header>
 
@@ -258,8 +257,8 @@
                     </span>
                 </div>
                 <div class="filter-bar">
-                    <a href="{{ route('admin.transaksi') }}?status=Belum+Lunas" class="filter-tag">⏳ Belum Lunas</a>
-                    <a href="{{ route('admin.transaksi') }}?status=Batal" class="filter-tag">❌ Batal</a>
+                    <a href="{{ route('admin.rekap') }}?status=Belum+Lunas" class="filter-tag">⏳ Belum Lunas</a>
+                    <a href="{{ route('admin.rekap') }}?status=Batal" class="filter-tag">❌ Batal</a>
                     <div class="filter-spacer"></div>
                     <a href="{{ route('admin.laporan') }}" class="btn-export">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
@@ -328,8 +327,8 @@
                     </table>
                 </div>
                 <div class="tbl-footer">
-                    <a href="{{ route('admin.transaksi') }}" class="btn-lihat-semua">Lihat Semua</a>
-                    <a href="{{ route('admin.transaksi') }}" class="tbl-footer-right">Lihat Semua &rsaquo;</a>
+                    <a href="{{ route('admin.rekap') }}" class="btn-lihat-semua">Lihat Semua</a>
+                    <a href="{{ route('admin.rekap') }}" class="tbl-footer-right">Lihat Semua &rsaquo;</a>
                 </div>
             </div>
 
