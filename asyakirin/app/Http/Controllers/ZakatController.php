@@ -17,15 +17,23 @@ class ZakatController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // validasi minimal seeprti isi form dan bukti
-        $request->validate([
+        // validasi minimal: selalu periksa keberadaan field utama. Bukti hanya wajib
+        // untuk donatur yang mengisi sendiri (tidak login sebagai kasir/admin).
+        $rules = [
             'nama'        => 'required|string|max:100',
             'jumlah_jiwa' => 'required|integer|min:1',
             'jenis'       => 'required|array|min:1',
             'uang'        => 'array',
             'beras'       => 'array',
-            'bukti'       => 'required|image|max:2048',
-        ]);
+        ];
+
+        if (auth('web')->check() || auth('admin')->check()) {
+            $rules['bukti'] = 'nullable|image|max:2048';
+        } else {
+            $rules['bukti'] = 'required|image|max:2048';
+        }
+
+        $request->validate($rules);
 
         $items      = [];
         $totalUang  = 0;
@@ -56,7 +64,6 @@ class ZakatController extends Controller
 
         // nama amil default berasal dari user yang login, jika tidak ada gunakan input manual atau kosong
         $namaAmil = auth('web')->check() ? auth('web')->user()->name : ($request->nama_amil ?? '');
-        $namaAmil = auth('admin')->check() ? auth('admin')->user()->name : ($request->nama_amil ?? '');
 
         // 🔥 SIMPAN DULU DALAM TRANSACTION
         // jika ada file bukti, simpan terlebih dahulu
@@ -72,6 +79,7 @@ class ZakatController extends Controller
             $totalBeras,
             $terbilang,
             $tahun,
+            $isLogged,
             $createdBy,  // ← pass ke dalam closure
             $buktiPath,
             $namaAmil
@@ -107,8 +115,11 @@ class ZakatController extends Controller
                 'tanggal'     => now()->toDateString(),
                 'tahun'       => $tahun,
 
-                // ✅ Auto-detect: kalau ada user login = pengurus, kalau tidak = donatur langsung
-                'created_by'  => $createdBy, // NULL kalau donatur langsung, ID pengurus kalau login
+                // status otomatis berdasarkan login
+                'status'      => $isLogged ? 'Lunas' : 'Belum Lunas',
+
+                // ✅ Auto-detect: kalau ada user login = kasir, kalau tidak = donatur langsung
+                'created_by'  => $createdBy, // NULL kalau donatur langsung, ID kasir kalau login
                 'bukti'       => $buktiPath,
             ]);
         });

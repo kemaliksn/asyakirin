@@ -65,6 +65,10 @@
 
             @csrf
 
+            @if(auth('web')->check() || auth('admin')->check())
+                <input type="hidden" name="status" value="Lunas">
+            @endif
+
             <!-- DATA DONATUR -->
             <h2 class="text-xl font-semibold mb-4">Data Muzakki / Donatur</h2>
 

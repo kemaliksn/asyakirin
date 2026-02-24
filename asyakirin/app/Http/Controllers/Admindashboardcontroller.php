@@ -70,7 +70,9 @@ class AdminDashboardController extends Controller
                 'nominal'    => $row->total_uang,
                 'status'     => $row->status,
                 'tanggal'    => Carbon::parse($row->tanggal)->translatedFormat('d M Y'),
-                'input_by'   => $row->creator ? $row->creator->name : 'Donatur', // ← info siapa yang input
+                // gunakan nama creator bila tersedia (users table), jika kosong pakai
+                // nama_amil karena itu menampung kasir/admin ketika created_by null
+                'input_by'   => $row->creator ? $row->creator->name : ($row->nama_amil ?: 'Donatur'), // ← info siapa yang input
             ];
         });
 
