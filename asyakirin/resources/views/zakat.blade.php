@@ -369,7 +369,7 @@
                     <p class="font-semibold mb-2">Scan QRIS</p>
                     <img src="{{ asset('icons/qris-code.png') }}"
                         alt="QRIS"
-                        class="w-48 mx-auto object-contain">
+                        class="w-68 mx-auto object-contain">
                     <p class="text-sm text-center text-gray-600 mt-2">
                         Gunakan aplikasi e-wallet / mobile banking Anda
                     </p>
