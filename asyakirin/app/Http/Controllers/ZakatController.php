@@ -166,6 +166,13 @@ class ZakatController extends Controller
             ]);
 
         $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+
+        // Jika kasir/admin sedang login, arahkan ke halaman invoice-ready (tanpa langsung download)
+        if (auth('web')->check() || auth('admin')->check()) {
+            return redirect()->route('zakat.invoice-ready', $zakat->id);
+        }
+
+        // Publik (donatur) tetap langsung download
         return $pdf->download($filename);
     }
 
@@ -207,5 +214,15 @@ class ZakatController extends Controller
 
         $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
         return $pdf->stream($filename);
+    }
+
+    /**
+     * Halaman konfirmasi setelah simpan (untuk kasir/admin):
+     * berisi tombol Download Invoice & Kirim via WhatsApp
+     */
+    public function invoiceReady(int $id)
+    {
+        $zakat = ZakatPenerimaan::findOrFail($id);
+        return view('invoice-ready', compact('zakat'));
     }
 }
