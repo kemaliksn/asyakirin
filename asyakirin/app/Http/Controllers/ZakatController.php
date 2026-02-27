@@ -177,7 +177,7 @@ class ZakatController extends Controller
             'daily_sequence' => $zakat->daily_sequence,
         ];
         $pdf = Pdf::loadView('pdf.zakat', compact('data'))
-            ->setPaper('A4', 'landscape')
+            ->setPaper('A5', 'landscape')
             ->setOption([
                 'defaultFont'          => 'DejaVu Sans',
                 'isRemoteEnabled'      => true,
@@ -225,7 +225,7 @@ class ZakatController extends Controller
         ];
 
         $pdf = Pdf::loadView('pdf.zakat', compact('data'))
-            ->setPaper('A4', 'landscape')
+            ->setPaper('A5', 'landscape')
             ->setOption([
                 'defaultFont'          => 'DejaVu Sans',
                 'isRemoteEnabled'      => true,
