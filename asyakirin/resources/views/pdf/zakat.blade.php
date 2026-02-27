@@ -5,7 +5,7 @@
 <style>
 body {
     font-family: DejaVu Sans, sans-serif;
-    font-size: 10pt;
+    font-size: 9pt;
     color: #000000;
     margin: 0;
     padding: 0;
@@ -13,80 +13,83 @@ body {
 
 /* HEADER */
 table.header { width:100%; background-color:#1a7a3c; border-collapse:collapse; }
-table.header td { color:#ffffff; vertical-align:middle; padding:8pt 10pt; }
-.h-title   { font-size:13pt; font-weight:bold; margin-bottom:2pt; }
-.h-sub     { font-size:11pt; font-weight:bold; margin-bottom:3pt; }
-.h-addr    { font-size:8pt; }
-.no-box    { border:1.5pt solid #ffffff; border-radius:5pt; padding:8pt 14pt; font-size:10pt; color:#ffffff; }
+table.header td { color:#ffffff; vertical-align:middle; padding:6pt 8pt; }
+.h-title   { font-size:12pt; font-weight:bold; margin-bottom:1pt; }
+.h-sub     { font-size:9.5pt; font-weight:bold; margin-bottom:2pt; }
+.h-addr    { font-size:7.5pt; }
+.no-box    { border:1pt solid #ffffff; border-radius:4pt; padding:6pt 10pt; font-size:9pt; color:#ffffff; }
 
 /* MAIN */
 table.main { width:100%; border-collapse:collapse; }
 table.main > tbody > tr > td { vertical-align:top; }
-td.col-left  { width:44%; padding:8pt 8pt 4pt 10pt; }
-td.col-right { width:56%; padding:8pt 10pt 4pt 4pt; }
+td.col-left  { width:42%; padding:6pt 6pt 3pt 8pt; }
+td.col-right { width:58%; padding:6pt 8pt 3pt 4pt; }
 
 /* LEFT */
-.sec-title { text-align:center; font-size:11pt; font-weight:bold; margin-bottom:8pt; }
+.sec-title { text-align:center; font-size:10.5pt; font-weight:bold; margin-bottom:6pt; }
 table.form-tbl { width:100%; border-collapse:collapse; }
-table.form-tbl td { font-size:9.5pt; padding-bottom:5pt; vertical-align:bottom; }
-td.f-lbl { width:44pt; white-space:nowrap; }
-td.f-col { width:8pt; }
-td.f-val { border-bottom:0.75pt solid #000000; min-height:13pt; padding-bottom:1pt; }
-.addr-line { border-bottom:0.75pt solid #000000; min-height:13pt; padding-bottom:1pt; margin-bottom:4pt; display:block; }
-.jiwa-wrap { font-size:9.5pt; margin:2pt 0 6pt 0; }
-.jiwa-box  { border-bottom:0.75pt solid #000000; width:36pt; display:inline-block; min-height:12pt; text-align:center; }
+table.form-tbl td { font-size:9pt; padding-bottom:4pt; vertical-align:bottom; }
+td.f-lbl { width:42pt; white-space:nowrap; }
+td.f-col { width:6pt; }
+td.f-val { border-bottom:0.6pt solid #000000; min-height:12pt; padding-bottom:1pt; }
+.addr-line { border-bottom:0.6pt solid #000000; min-height:12pt; padding-bottom:1pt; margin-bottom:3pt; display:block; }
+.jiwa-wrap { font-size:9pt; margin:1pt 0 4pt 0; }
+.jiwa-box  { border-bottom:0.6pt solid #000000; width:32pt; display:inline-block; min-height:11pt; text-align:center; }
 table.name-tbl { width:100%; border-collapse:collapse; margin-top:2pt; }
-table.name-tbl td { font-size:9.5pt; padding-bottom:4pt; vertical-align:bottom; }
-td.n-num  { width:14pt; }
-td.n-line { border-bottom:0.75pt solid #000000; padding-bottom:1pt; }
+table.name-tbl td { font-size:9pt; padding-bottom:3pt; vertical-align:bottom; }
+td.n-num  { width:12pt; }
+td.n-line { border-bottom:0.6pt solid #000000; padding-bottom:1pt; }
 
 /* RIGHT */
 table.zakat { width:100%; border-collapse:collapse; }
-table.zakat th { background-color:#1a7a3c; color:#ffffff; border:1.5pt solid #1a7a3c; padding:5pt 5pt; font-size:9.5pt; text-align:center; font-weight:bold; }
-table.zakat td { border:1.5pt solid #1a7a3c; padding:3.5pt 5pt; font-size:9.5pt; vertical-align:middle; }
-td.t-no    { text-align:center; width:18pt; }
-td.t-uang  { white-space:nowrap; width:72pt; }
-td.t-beras { text-align:right; white-space:nowrap; width:46pt; }
+table.zakat th { background-color:#1a7a3c; color:#ffffff; border:1pt solid #1a7a3c; padding:4pt 4pt; font-size:9pt; text-align:center; font-weight:bold; }
+table.zakat td { border:1pt solid #1a7a3c; padding:2.5pt 4pt; font-size:9pt; vertical-align:middle; }
+td.t-no    { text-align:center; width:16pt; }
+td.t-uang  { white-space:nowrap; width:64pt; }
+td.t-beras { text-align:right; white-space:nowrap; width:42pt; }
 tr.tr-total td { font-weight:bold; background-color:#edf7f0; }
-td.t-terb  { font-style:italic; padding:4pt 5pt; min-height:28pt; vertical-align:top; }
+td.t-terb  { font-style:italic; padding:3pt 4pt; min-height:22pt; vertical-align:top; }
 .terb-bold { font-weight:bold; }
 
 /* BOTTOM – Arab kiri, TTD kanan */
 table.bottom { width:100%; border-collapse:collapse; }
 table.bottom > tbody > tr > td { vertical-align:bottom; }
-td.b-arabic { width:48%; padding:2pt 8pt 4pt 10pt; }
-td.b-sign   { width:52%; padding:2pt 10pt 4pt 4pt; text-align:right; }
+td.b-arabic { width:48%; padding:2pt 6pt 2pt 8pt; }
+td.b-sign   { width:52%; padding:2pt 8pt 2pt 4pt; text-align:right; }
 
 .arabic-text {
     font-family: DejaVu Sans, sans-serif;
-    font-size:14pt; text-align:right; direction:rtl;
-    line-height:1.9; margin-bottom:4pt;
+    font-size:12pt; text-align:right; direction:rtl;
+    line-height:1.6; margin-bottom:3pt;
 }
-.arabic-trans { font-style:italic; font-size:8.5pt; text-align:center; line-height:1.5; color:#333333; }
+.arabic-trans { font-style:italic; font-size:8pt; text-align:center; line-height:1.4; color:#333333; }
 
 /* Tanda tangan – semua align right */
 .sign-inner { display:inline-block; text-align:left; }
-.sign-city  { font-size:9.5pt; margin-bottom:3pt; }
-.sign-line  { border-bottom:0.75pt solid #000000; display:inline-block; width:115pt; }
-.sign-amil  { font-size:9.5pt; margin-bottom:40pt; margin-top:2pt; }
+.sign-city  { font-size:9pt; margin-bottom:2pt; }
+.sign-line  { border-bottom:0.6pt solid #000000; display:inline-block; width:100pt; }
+.sign-amil  { font-size:9pt; margin-bottom:30pt; margin-top:2pt; }
 .sign-box   {
-    border:1.5pt solid #000000;
+    border:1pt solid #000000;
     display:inline-block;
-    min-width:150pt;
-    padding:3pt 8pt;
-    min-height:16pt;
-    font-size:9.5pt;
+    min-width:140pt;
+    padding:2pt 6pt;
+    min-height:14pt;
+    font-size:9pt;
     text-align:center;
 }
 
 /* FOOTER */
-table.footer { width:100%; background-color:#1a7a3c; border-collapse:collapse; margin-top:4pt; }
-table.footer td { color:#ffffff; padding:7pt 10pt; vertical-align:middle; font-size:8.5pt; }
-td.f-contact { width:32%; line-height:1.7; }
+table.footer { width:100%; background-color:#1a7a3c; border-collapse:collapse; margin-top:3pt; }
+table.footer td { color:#ffffff; padding:6pt 8pt; vertical-align:middle; font-size:8pt; }
+td.f-contact { width:32%; line-height:1.5; }
 td.f-bsi     { width:36%; text-align:center; }
-td.f-rek     { width:32%; line-height:1.8; }
-.bsi-badge   { background-color:#ffffff; color:#1a7a3c; font-weight:bold; font-size:12pt; border-radius:3pt; padding:2pt 10pt; letter-spacing:1pt; display:inline-block; }
-.bsi-sub     { font-size:7.5pt; color:#ffffff; margin-top:2pt; line-height:1.3; }
+td.f-rek     { width:32%; line-height:1.6; }
+.bsi-badge   { background-color:#ffffff; color:#1a7a3c; font-weight:bold; font-size:11pt; border-radius:3pt; padding:1pt 8pt; letter-spacing:1pt; display:inline-block; }
+.bsi-sub     { font-size:7pt; color:#ffffff; margin-top:2pt; line-height:1.2; }
+
+/* Avoid page breaks inside tables */
+table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 </style>
 </head>
 <body>
@@ -141,6 +144,11 @@ td.f-rek     { width:32%; line-height:1.8; }
             <td class="f-lbl">Profesi</td>
             <td class="f-col">:</td>
             <td class="f-val">{{ $data['profesi'] ?? '' }}</td>
+        </tr>
+        <tr>
+            <td class="f-lbl">Metode</td>
+            <td class="f-col">:</td>
+            <td class="f-val">{{ $data['bank'] ?? '' }}</td>
         </tr>
     </table>
 
