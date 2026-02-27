@@ -66,7 +66,8 @@ class LaporanController extends Controller
         // Jika request export ke Excel
         if ($request->get('export') === 'excel') {
             $filename = 'Laporan_Zakat_' . ($tanggal ? str_replace('-', '_', $tanggal) : date('Y-m-d')) . '.xlsx';
-            return Excel::download(new LaporanExport($transaksi, $tanggal, $namaKasir), $filename);
+            // Kirim data model asli (mengandung items) agar export bisa pecah per-jenis
+            return Excel::download(new LaporanExport($data, $tanggal, $namaKasir), $filename);
         }
 
         // Daftar kasir unik untuk dropdown filter
