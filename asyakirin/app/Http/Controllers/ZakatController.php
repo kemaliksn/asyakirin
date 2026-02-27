@@ -97,6 +97,28 @@ class ZakatController extends Controller
             $namaAmil
         ) {
 
+            // tanggal tetap untuk perhitungan & simpan
+            $today = now()->toDateString();
+
+            // nomor urut harian per kasir/petugas — prefer created_by jika ada; fallback ke nama_amil
+            $dailySeq = null;
+            if (!empty($createdBy)) {
+                $existingCount = ZakatPenerimaan::where('created_by', $createdBy)
+                    ->where('tanggal', $today)
+                    ->lockForUpdate()
+                    ->count();
+                $dailySeq = $existingCount + 1;
+            } else {
+                // Jika login via guard admin atau created_by tidak terisi, gunakan nama_amil sebagai identitas petugas
+                if (!empty($namaAmil)) {
+                    $existingCount = ZakatPenerimaan::where('nama_amil', $namaAmil)
+                        ->where('tanggal', $today)
+                        ->lockForUpdate()
+                        ->count();
+                    $dailySeq = $existingCount + 1;
+                }
+            }
+
             $last = ZakatPenerimaan::where('tahun', $tahun)
                 ->orderBy('id', 'desc')
                 ->lockForUpdate()
@@ -112,20 +134,21 @@ class ZakatController extends Controller
             $nomor = "ASY/$tahun/UPZ/" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
             return ZakatPenerimaan::create([
-                'nomor'       => $nomor,
-                'nama'        => $request->nama,
-                'alamat'      => $request->alamat,
-                'telpon'      => $request->telpon,
-                'profesi'     => $request->profesi,
-                'jumlah_jiwa' => (int) $request->jumlah_jiwa,
-                'atas_nama'   => $request->atas_nama ?? [],
-                'items'       => $items,
-                'total_uang'  => (int) $totalUang,
-                'total_beras' => $totalBeras,
-                'terbilang'   => $terbilang,
-                'nama_amil'   => $namaAmil,
-                'tanggal'     => now()->toDateString(),
-                'tahun'       => $tahun,
+                'nomor'          => $nomor,
+                'nama'           => $request->nama,
+                'alamat'         => $request->alamat,
+                'telpon'         => $request->telpon,
+                'profesi'        => $request->profesi,
+                'jumlah_jiwa'    => (int) $request->jumlah_jiwa,
+                'atas_nama'      => $request->atas_nama ?? [],
+                'items'          => $items,
+                'total_uang'     => (int) $totalUang,
+                'total_beras'    => $totalBeras,
+                'terbilang'      => $terbilang,
+                'nama_amil'      => $namaAmil,
+                'daily_sequence' => $dailySeq,
+                'tanggal'        => $today,
+                'tahun'          => $tahun,
 
                 // status otomatis berdasarkan login
                 'status'      => $isLogged ? 'Lunas' : 'Belum Lunas',
@@ -139,18 +162,19 @@ class ZakatController extends Controller
 
         // Generate PDF seperti biasa...
         $data = [
-            'nomor'       => $zakat->nomor,
-            'nama'        => $zakat->nama,
-            'alamat'      => $zakat->alamat,
-            'telpon'      => $zakat->telpon,
-            'profesi'     => $zakat->profesi,
-            'jumlah_jiwa' => $zakat->jumlah_jiwa,
-            'atas_nama'   => $zakat->atas_nama ?? [],
-            'items'       => $zakat->items ?? [],
-            'bank'        => $zakat->bank ?? null,
-            'terbilang'   => $zakat->terbilang,
-            'tanggal'     => now()->isoFormat('D MMMM Y'),
-            'nama_amil'   => $zakat->nama_amil,
+            'nomor'          => $zakat->nomor,
+            'nama'           => $zakat->nama,
+            'alamat'         => $zakat->alamat,
+            'telpon'         => $zakat->telpon,
+            'profesi'        => $zakat->profesi,
+            'jumlah_jiwa'    => $zakat->jumlah_jiwa,
+            'atas_nama'      => $zakat->atas_nama ?? [],
+            'items'          => $zakat->items ?? [],
+            'bank'           => $zakat->bank ?? null,
+            'terbilang'      => $zakat->terbilang,
+            'tanggal'        => now()->isoFormat('D MMMM Y'),
+            'nama_amil'      => $zakat->nama_amil,
+            'daily_sequence' => $zakat->daily_sequence,
         ];
         $pdf = Pdf::loadView('pdf.zakat', compact('data'))
             ->setPaper('A4', 'landscape')
@@ -185,18 +209,19 @@ class ZakatController extends Controller
         $zakat = ZakatPenerimaan::findOrFail($id);
 
         $data = [
-            'nomor'       => $zakat->nomor,
-            'nama'        => $zakat->nama,
-            'alamat'      => $zakat->alamat,
-            'telpon'      => $zakat->telpon,
-            'profesi'     => $zakat->profesi,
-            'jumlah_jiwa' => $zakat->jumlah_jiwa,
-            'atas_nama'   => $zakat->atas_nama ?? [],
-            'items'       => $zakat->items     ?? [],
-            'bank'        => $zakat->bank ?? null,
-            'terbilang'   => $zakat->terbilang,
-            'tanggal'     => $zakat->tanggal->isoFormat('D MMMM Y'),
-            'nama_amil'   => $zakat->nama_amil,
+            'nomor'          => $zakat->nomor,
+            'nama'           => $zakat->nama,
+            'alamat'         => $zakat->alamat,
+            'telpon'         => $zakat->telpon,
+            'profesi'        => $zakat->profesi,
+            'jumlah_jiwa'    => $zakat->jumlah_jiwa,
+            'atas_nama'      => $zakat->atas_nama ?? [],
+            'items'          => $zakat->items     ?? [],
+            'bank'           => $zakat->bank ?? null,
+            'terbilang'      => $zakat->terbilang,
+            'tanggal'        => $zakat->tanggal->isoFormat('D MMMM Y'),
+            'nama_amil'      => $zakat->nama_amil,
+            'daily_sequence' => $zakat->daily_sequence,
         ];
 
         $pdf = Pdf::loadView('pdf.zakat', compact('data'))

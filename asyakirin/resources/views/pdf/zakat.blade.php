@@ -233,7 +233,8 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
     <td class="b-sign">
         <div class="sign-city">Jakarta,&nbsp;<span class="sign-line">&nbsp;{{ $data['tanggal'] ?? '' }}</span></div>
         <div class="sign-amil">Amil / Penerima,</div>
-        <div class="sign-box">({{ $data['nama_amil'] ?: 'Admin UPZ' }})</div>
+        @php $seq = isset($data['daily_sequence']) && $data['daily_sequence'] ? str_pad($data['daily_sequence'], 2, '0', STR_PAD_LEFT) : null; @endphp
+        <div class="sign-box">({{ $data['nama_amil'] ?: 'Admin UPZ' }}) @if($seq) — #{{ $seq }} @endif</div>
     </td>
 </tr>
 </table>

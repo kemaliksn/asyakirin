@@ -24,6 +24,7 @@ class ZakatPenerimaan extends Model
         'total_beras',
         'terbilang',
         'nama_amil',
+        'daily_sequence',
         'tanggal',
         'status',
         'tahun',
