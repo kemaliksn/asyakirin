@@ -17,10 +17,10 @@
 
     @if(!$admin && !$user)
     <div class="mb-4 text-right">
-        <a href="{{ route('login') }}"
+        {{-- <a href="{{ route('login') }}"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold">
             🔐 Login sebagai Petugas
-        </a>
+        </a> --}}
     </div>
     @else
     <div class="mb-4 bg-green-50 border border-green-200 rounded p-4">
@@ -55,7 +55,7 @@
     <div class="bg-white shadow-lg rounded-lg p-8">
 
         <h1 class="text-3xl font-bold text-green-700 mb-6">
-            Masuk Zakat
+            Form ZIS
         </h1>
 
         <form method="POST" action="{{ route('export.pdf') }}" id="zakatForm" enctype="multipart/form-data">
@@ -86,7 +86,7 @@
 
             <!-- CHECKBOX -->
             <h2 class="text-xl font-semibold mb-4">
-                Pilih Jenis Zakat
+                Pilih Jenis Pembayaran
             </h2>
 
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
