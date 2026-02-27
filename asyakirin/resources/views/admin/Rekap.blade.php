@@ -354,6 +354,7 @@
                     <tr>
                         <th>No.</th>
                         <th>Invoice</th>
+                        <th>Metode</th>
                         <th>Nama</th>
                         <th>Jenis</th>
                         <th>Nominal</th>
@@ -368,6 +369,7 @@
                     <tr>
                         <td style="color:#aaa;font-size:12.5px;">{{ ($currentPage - 1) * $perPage + $i + 1 }}.</td>
                         <td><span class="invoice-tag">{{ $row->invoice }}</span></td>
+                        <td style="font-size:12px;color:#444;">{{ $row->bank ?? '-' }}</td>
                         <td style="font-weight:600;">{{ $row->nama }}</td>
                         <td>
                             @php
@@ -412,7 +414,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9">
+                        <td colspan="10">
                             <div class="empty-state">
                                 <div class="empty-state-icon">📭</div>
                                 <p>Tidak ada data untuk filter yang dipilih.</p>

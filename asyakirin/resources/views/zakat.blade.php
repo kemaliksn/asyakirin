@@ -17,10 +17,10 @@
 
     @if(!$admin && !$user)
     <div class="mb-4 text-right">
-        <a href="{{ route('login') }}"
+        <!-- <a href="{{ route('login') }}"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold">
             🔐 Login sebagai Petugas
-        </a>
+        </a> -->
     </div>
     @else
     <div class="mb-4 bg-green-50 border border-green-200 rounded p-4">
@@ -551,6 +551,19 @@
 </script>
 
 
+
+@if(!(auth('web')->check() || auth('admin')->check()))
+<a href="https://wa.me/6281234567890?text=Assalamu%27alaikum%20Saya%20butuh%20bantuan" class="wa-call-center" target="_blank" rel="noopener" aria-label="WhatsApp Call Center">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M19.11 17.01c-.29-.14-1.68-.83-1.94-.92-.26-.09-.45-.14-.64.14-.19.29-.73.92-.9 1.11-.17.19-.33.22-.61.07-.29-.14-1.22-.45-2.33-1.43-.86-.76-1.44-1.7-1.61-1.98-.17-.29-.02-.45.13-.59.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.54-.88-2.11-.23-.56-.47-.49-.64-.5-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.43 0 1.43 1.02 2.81 1.16 3 .14.19 2 3.06 4.84 4.29.68.29 1.21.46 1.62.59.68.22 1.3.19 1.79.12.55-.08 1.68-.69 1.92-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33zM16.01 4C9.93 4 5 8.92 5 14.98c0 2.39.86 4.59 2.29 6.31L6 27.99l6.87-1.8c1.66.91 3.56 1.43 5.58 1.43 6.08 0 11.01-4.92 11.01-10.98C29.46 8.92 24.54 4 18.46 4h-2.45zM18.46 26c-1.8 0-3.47-.5-4.89-1.36l-.35-.21-4.08 1.06 1.09-3.97-.23-.37c-1.3-1.64-2.07-3.71-2.07-5.98C8.93 10.02 12.99 6 18.01 6c5.02 0 9.09 4.02 9.09 8.96S23.48 26 18.46 26z" fill="currentColor"/></svg>
+    <span>Call Center</span>
+</a>
+<style>
+    .wa-call-center{position:fixed;right:16px;bottom:16px;display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:12px 14px;border-radius:9999px;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:600;z-index:9999}
+    .wa-call-center svg{width:20px;height:20px}
+    .wa-call-center:hover{filter:brightness(0.95)}
+    @media (max-width:480px){.wa-call-center span{display:none}.wa-call-center{padding:12px}}
+</style>
+@endif
 
 </body>
 

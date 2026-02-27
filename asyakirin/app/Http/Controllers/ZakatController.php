@@ -27,6 +27,9 @@ class ZakatController extends Controller
             'beras'       => 'array',
         ];
 
+        // optional payment method
+        $rules['bank'] = 'nullable|string|max:50';
+
         if (auth('web')->check() || auth('admin')->check()) {
             $rules['bukti'] = 'nullable|image|max:2048';
         } else {
@@ -132,6 +135,7 @@ class ZakatController extends Controller
                 // ✅ Auto-detect: kalau ada user login = kasir, kalau tidak = donatur langsung
                 'created_by'  => $createdBy, // NULL kalau donatur langsung, ID kasir kalau login
                 'bukti'       => $buktiPath,
+                'bank'        => $request->bank ?? null,
             ]);
         });
 
@@ -145,14 +149,26 @@ class ZakatController extends Controller
             'jumlah_jiwa' => $zakat->jumlah_jiwa,
             'atas_nama'   => $zakat->atas_nama ?? [],
             'items'       => $zakat->items ?? [],
+            'bank'        => $zakat->bank ?? null,
             'terbilang'   => $zakat->terbilang,
             'tanggal'     => now()->isoFormat('D MMMM Y'),
             'nama_amil'   => $zakat->nama_amil,
         ];
         $pdf = Pdf::loadView('pdf.zakat', compact('data'))
-            ->setPaper('A4', 'landscape');
+            ->setPaper('A4', 'landscape')
+            ->setOption([
+                'defaultFont'          => 'DejaVu Sans',
+                'isRemoteEnabled'      => true,
+                'isHtml5ParserEnabled' => true,
+                'dpi'                  => 150,
+                'margin_top'           => 0,
+                'margin_right'         => 0,
+                'margin_bottom'        => 0,
+                'margin_left'          => 0,
+            ]);
 
-        return $pdf->download('tanda-terima-zakat.pdf');
+        $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+        return $pdf->download($filename);
     }
 
     /**
@@ -172,6 +188,7 @@ class ZakatController extends Controller
             'jumlah_jiwa' => $zakat->jumlah_jiwa,
             'atas_nama'   => $zakat->atas_nama ?? [],
             'items'       => $zakat->items     ?? [],
+            'bank'        => $zakat->bank ?? null,
             'terbilang'   => $zakat->terbilang,
             'tanggal'     => $zakat->tanggal->isoFormat('D MMMM Y'),
             'nama_amil'   => $zakat->nama_amil,
@@ -190,6 +207,7 @@ class ZakatController extends Controller
                 'margin_left'          => 0,
             ]);
 
-        return $pdf->stream('tanda-terima-' . $zakat->nomor . '.pdf');
+        $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+        return $pdf->stream($filename);
     }
 }

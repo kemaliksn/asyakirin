@@ -28,6 +28,7 @@ class ZakatPenerimaan extends Model
         'status',
         'tahun',
         'bukti',
+        'bank',
     ];
 
     public function creator()

@@ -101,6 +101,7 @@ class RekapController extends Controller
                     'status'   => $record->status,
                     'tanggal'  => Carbon::parse($record->tanggal)->translatedFormat('d F Y'),
                     'input_by' => $creatorName,
+                    'bank'     => $record->bank ?? null,
                 ]);
             }
         }
