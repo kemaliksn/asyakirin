@@ -243,18 +243,18 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 <table class="footer" cellspacing="0" cellpadding="0">
 <tr>
     <td class="f-contact">
-        <div><b>Kontak :</b> (021) 8600524</div>
+        <div><b>Kontak :</b> (021) 8600524 (Hotline)</div>
         <div><b>Email &nbsp;:</b> ypdiaspb@gmail.com</div>
-        <div><b>ig &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</b> masjid.asysyaakiriin_pb</div>
+        <div><b>ig &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</b> upz_ypdiaspb</div>
     </td>
     <td class="f-bsi">
         <div class="bsi-badge">BSI</div>
         <div class="bsi-sub">BANK SYARIAH<br>INDONESIA</div>
     </td>
     <td class="f-rek">
-        <div><b>Rek. Infaq</b> : 1548734130 An. YPDI Asy-Syaakiriin</div>
-        <div><b>Rek. Zakat</b> : 4504504560 An. YPDI Asy-Syaakiriin</div>
-        <div><b>Rek. Yatim</b> : 7036292576 An. YPDI Asy-Syaakiriin</div>
+        <div><b>Rekening Zakat :</b> 450.450.4560</div>
+        <div><b>an :</b> YPDI ASY-SYAAKIRIIN PONDOK BAMBU</div>
+        <div style="font-weight:700;">Nomor Konfirmasi / Call Center : 0851-1156-2500 (Chat Only)</div>
     </td>
 </tr>
 </table>
