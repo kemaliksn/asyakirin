@@ -332,6 +332,12 @@
                     <input type="radio" name="bank" value="BSI"
                         class="w-5 h-5 accent-green-600">
                 </label>
+                <!-- BSI DETAIL (hidden by default) -->
+                <div id="bsi-detail" class="hidden border border-dashed rounded-lg p-4 mt-3 bg-gray-50">
+                    <p class="font-semibold mb-1">Rekening Zakat</p>
+                    <div class="text-lg font-bold text-green-700 tracking-wider">450.450.4560</div>
+                    <div class="text-sm text-gray-700 mt-1">an : YPDI ASY-SYAAKIRIIN PONDOK BAMBU</div>
+                </div>
 
                 <!-- Muamalat -->
                 {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
@@ -482,10 +488,9 @@
 <!-- SCRIPT QRIS -->
 <script>
     document.querySelectorAll('input[name="bank"]').forEach(radio => {
-
         radio.addEventListener('change', function () {
-
             const qrisDetail = document.getElementById('qris-detail');
+            const bsiDetail  = document.getElementById('bsi-detail');
 
             if (this.value === 'QRIS') {
                 qrisDetail.classList.remove('hidden');
@@ -493,8 +498,12 @@
                 qrisDetail.classList.add('hidden');
             }
 
+            if (this.value === 'BSI') {
+                bsiDetail.classList.remove('hidden');
+            } else {
+                bsiDetail.classList.add('hidden');
+            }
         });
-
     });
 </script>
 
