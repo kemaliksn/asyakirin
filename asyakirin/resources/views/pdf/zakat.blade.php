@@ -3,24 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <style>
+@page {
+    margin: 0;
+    size: A5 landscape;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 body {
     font-family: DejaVu Sans, sans-serif;
     font-size: 7.5pt;
     color: #000000;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 210mm;
+    max-height: 210mm;
 }
 
 /* HEADER */
-table.header { width:100%; background-color:#1a7a3c; border-collapse:collapse; }
+table.header { width:100%; background-color:#1a7a3c; border-collapse:collapse; flex-shrink: 0; }
 table.header td { color:#ffffff; vertical-align:middle; padding:3pt 5pt; }
 .h-title   { font-size:9.5pt; font-weight:bold; margin-bottom:1pt; }
 .h-sub     { font-size:8pt; font-weight:bold; margin-bottom:2pt; }
 .h-addr    { font-size:7pt; }
 .no-box    { border:1pt solid #ffffff; border-radius:4pt; padding:3pt 6pt; font-size:7.5pt; color:#ffffff; }
 
+/* MAIN - flex grow to fill space */
+.main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-top:25pt;
+}
+
 /* MAIN */
-table.main { width:100%; border-collapse:collapse; }
+table.main { width:100%; border-collapse:collapse; flex: 1; }
 table.main > tbody > tr > td { vertical-align:top; }
 td.col-left  { width:42%; padding:3pt 4pt 2pt 5pt; }
 td.col-right { width:58%; padding:3pt 5pt 2pt 2pt; }
@@ -40,6 +60,19 @@ table.name-tbl td { font-size:7.5pt; padding-bottom:1.5pt; vertical-align:bottom
 td.n-num  { width:12pt; }
 td.n-line { border-bottom:0.6pt solid #000000; padding-bottom:1pt; }
 
+/* Dynamic name list styling - more compact when many names */
+.name-tbl-compact td { padding-bottom:0.5pt !important; font-size:7pt !important; }
+.name-tbl-compact td.n-num { width:10pt !important; }
+.jiwa-wrap-compact { font-size:7pt !important; margin:0.5pt 0 1pt 0 !important; }
+.jiwa-box-compact { width:20pt !important; font-size:7pt !important; }
+
+/* Extra compact for 6+ names */
+.name-tbl-extra-compact td { padding-bottom:0.3pt !important; font-size:6.5pt !important; line-height: 1.1; }
+.name-tbl-extra-compact td.n-num { width:8pt !important; }
+.name-tbl-extra-compact td.n-line { border-bottom:0.4pt solid #000000; }
+.jiwa-wrap-extra-compact { font-size:6.5pt !important; margin:0.3pt 0 0.5pt 0 !important; }
+.jiwa-box-extra-compact { width:18pt !important; font-size:6.5pt !important; }
+
 /* RIGHT */
 table.zakat { width:100%; border-collapse:collapse; }
 table.zakat th { background-color:#1a7a3c; color:#ffffff; border:1pt solid #1a7a3c; padding:2.5pt 2.5pt; font-size:7.5pt; text-align:center; font-weight:bold; }
@@ -52,7 +85,7 @@ td.t-terb  { font-style:italic; padding:3pt 4pt; min-height:14pt; vertical-align
 .terb-bold { font-weight:bold; }
 
 /* BOTTOM – Arab kiri, TTD kanan */
-table.bottom { width:100%; border-collapse:collapse; }
+table.bottom { width:100%; border-collapse:collapse; flex-shrink: 0; }
 table.bottom > tbody > tr > td { vertical-align:bottom; }
 td.b-arabic { width:48%; padding:2pt 6pt 2pt 8pt; }
 td.b-sign   { width:52%; padding:2pt 8pt 2pt 4pt; text-align:right; }
@@ -69,7 +102,7 @@ td.b-sign   { width:52%; padding:2pt 8pt 2pt 4pt; text-align:right; }
 .sign-city  { font-size:8pt; margin-bottom:2pt; }
 .sign-line  { border-bottom:0.6pt solid #000000; display:inline-block; width:100pt; }
 .sign-amil  { font-size:9pt; margin-bottom:14pt; margin-top:2pt; }
-.sign-box   {
+.sign-box, .sign_box {
     border:1pt solid #000000;
     display:inline-block;
     min-width:110pt;
@@ -79,8 +112,14 @@ td.b-sign   { width:52%; padding:2pt 8pt 2pt 4pt; text-align:right; }
     text-align:center;
 }
 
-/* FOOTER */
-table.footer { width:100%; background-color:#1a7a3c; border-collapse:collapse; margin-top:3pt; }
+/* FOOTER - fixed at bottom */
+table.footer {
+    width:100%;
+    background-color:#1a7a3c;
+    border-collapse:collapse;
+    flex-shrink: 0;
+    margin-top: 20pt;
+}
 table.footer td { color:#ffffff; padding:3pt 5pt; vertical-align:middle; font-size:7pt; }
 td.f-contact { width:32%; line-height:1.5; }
 td.f-bsi     { width:36%; text-align:center; }
@@ -114,6 +153,7 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 </table>
 
 {{-- MAIN --}}
+<div class="main-container">
 <table class="main" cellspacing="0" cellpadding="0">
 <tr>
 
@@ -151,12 +191,17 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
         </tr>
     </table>
 
-    <div class="jiwa-wrap">
-        Jml. Jiwa :&nbsp;<span class="jiwa-box">{{ $data['jumlah_jiwa'] ?? '' }}</span>&nbsp;orang, atas nama :
+    @php
+        $atasNama = array_values(array_filter((array)($data['atas_nama'] ?? []), function($v){ return trim((string)$v) !== ''; }));
+        $countNames = count($atasNama);
+        $isCompact = $countNames > 4;
+        $isExtraCompact = $countNames > 6;
+    @endphp
+    <div class="jiwa-wrap {{ $isExtraCompact ? 'jiwa-wrap-extra-compact' : ($isCompact ? 'jiwa-wrap-compact' : '') }}">
+        Jml. Jiwa :&nbsp;<span class="jiwa-box {{ $isExtraCompact ? 'jiwa-box-extra-compact' : ($isCompact ? 'jiwa-box-compact' : '') }}">{{ $data['jumlah_jiwa'] ?? '' }}</span>&nbsp;orang, atas nama :
     </div>
 
-    @php $atasNama = array_values(array_filter((array)($data['atas_nama'] ?? []), function($v){ return trim((string)$v) !== ''; })); @endphp
-    <table class="name-tbl" cellspacing="0" cellpadding="0">
+    <table class="name-tbl {{ $isExtraCompact ? 'name-tbl-extra-compact' : ($isCompact ? 'name-tbl-compact' : '') }}" cellspacing="0" cellpadding="0">
         @foreach($atasNama as $i => $nm)
         <tr>
             <td class="n-num">{{ $i+1 }}.</td>
@@ -217,6 +262,7 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 
 </tr>
 </table>
+</div>
 
 {{-- ARABIC + TANDA TANGAN --}}
 <table class="bottom" cellspacing="0" cellpadding="0">
@@ -233,7 +279,7 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
         <div class="sign-city">Jakarta,&nbsp;<span class="sign-line">&nbsp;{{ $data['tanggal'] ?? '' }}</span></div>
         <div class="sign-amil">Amil / Penerima,</div>
         @php $seq = isset($data['daily_sequence']) && $data['daily_sequence'] ? str_pad($data['daily_sequence'], 2, '0', STR_PAD_LEFT) : null; @endphp
-        <div class="sign-box">({{ $data['nama_amil'] ?: 'Admin UPZ' }}) @if($seq) — #{{ $seq }} @endif</div>
+        <div class="sign_box">({{ $data['nama_amil'] ?: 'Admin UPZ' }}) @if($seq) — #{{ $seq }} @endif</div>
     </td>
 </tr>
 </table>
