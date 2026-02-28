@@ -97,6 +97,53 @@
                 <label><input type="checkbox"   value="Fidyah" onchange="updateTable()" class="mr-2 zakat"> Fidyah</label>
             </div>
 
+            <!-- INFO FIDYAH & ZAKAT FITRAH -->
+            <div class="grid md:grid-cols-2 gap-4 mb-6">
+
+                <!-- Fidyah Card -->
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="bg-amber-500 text-white p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-amber-800">Tentang Fidyah</h3>
+                    </div>
+                    <p class="text-amber-900 text-sm mb-3">
+                        Dapat dibayarkan dalam bentuk <span class="font-semibold">makanan siap saji</span> atau <span class="font-semibold">uang</span> senilai harga 1 porsi makan.
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 text-left">
+                        <p class="text-xs text-amber-700 font-medium mb-1">Contoh Perhitungan:</p>
+                        <p class="text-sm text-amber-900">
+                            Rp 35.000/porsi × 10 Hari = <span class="font-bold text-amber-700">Rp 350.000</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Zakat Fitrah Card -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="bg-green-600 text-white p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-green-800">Tentang Zakat Fitrah</h3>
+                    </div>
+                    <p class="text-green-900 text-sm mb-3">
+                        Perjiwa = Harga Beras × <span class="font-semibold">(3,5 Liter / 2,5 Kg)</span>
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 text-left">
+                        <p class="text-xs text-green-700 font-medium mb-1">Contoh Perhitungan:</p>
+                        <p class="text-sm text-green-900">
+                            Rp 15.000/L × 3,5L = <span class="font-bold text-green-700">Rp 52.500</span>/jiwa
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
             <!-- TABLE -->
             <div class="overflow-x-auto">
                 <table class="w-full border border-green-600 text-center" id="zakatTable">
