@@ -179,7 +179,18 @@
                 </div>
                 <div class="form-group">
                     <label>Profesi</label>
-                    <input type="text" name="profesi" value="{{ old('profesi', $record->profesi) }}" {{ !in_array($currentUser->role, ['admin','kasir']) ? 'readonly' : '' }}>
+                    @php
+                        $options = ['PNS','Pegawai Swasta','Wiraswasta','Pedagang','Guru','Pensiunan','Pelayan Jasa','Lainnya'];
+                        $current = old('profesi', $record->profesi);
+                    @endphp
+                    <select name="profesi" {{ !in_array($currentUser->role, ['admin','kasir']) ? 'disabled' : '' }}>
+                        @foreach($options as $opt)
+                            <option value="{{ $opt }}" {{ $current === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                        @endforeach
+                        @if($current && !in_array($current, $options))
+                            <option value="{{ $current }}" selected>{{ $current }}</option>
+                        @endif
+                    </select>
                 </div>
             </div>
 
@@ -221,7 +232,19 @@
                 <div class="form-group" style="flex:1 1 100%;">
                     <label>Bukti Pembayaran</label>
                     @if($record->bukti)
-                        <img src="{{ asset('storage/'.$record->bukti) }}" alt="Bukti" class="bukti mb-2">
+                        <div class="mb-2" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                            <a href="{{ asset('storage/'.$record->bukti) }}" target="_blank" rel="noopener" title="Klik untuk lihat ukuran penuh">
+                                <img src="{{ asset('storage/'.$record->bukti) }}" alt="Bukti" class="bukti">
+                            </a>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <a href="{{ asset('storage/'.$record->bukti) }}" target="_blank" rel="noopener" class="btn-secondary" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+                                    👁️ Lihat
+                                </a>
+                                <a href="{{ asset('storage/'.$record->bukti) }}" download="{{ basename($record->bukti) }}" class="btn-primary" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+                                    ⬇️ Download
+                                </a>
+                            </div>
+                        </div>
                     @endif
                     @if(in_array($currentUser->role, ['admin','kasir']))
                         <input type="file" name="bukti" accept="image/*">

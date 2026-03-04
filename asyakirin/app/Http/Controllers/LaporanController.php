@@ -10,6 +10,54 @@ use Carbon\Carbon;
 
 class LaporanController extends Controller
 {
+    public function exportSaya(Request $request)
+    {
+        // Dapatkan user saat ini dari salah satu guard
+        $user = auth('admin')->check() ? auth('admin')->user() : auth('web')->user();
+        if (! $user) {
+            abort(401);
+        }
+
+        $bulan = (int)($request->get('bulan', now()->month));
+        $tahun = (int)($request->get('tahun', now()->year));
+        $status = $request->get('status');
+        $jenis  = $request->get('jenis'); // optional filter by jenis substring
+        $nama   = $request->get('nama');  // optional filter by donor name substring
+
+        // Query transaksi milik user ini (created_by)
+        $query = ZakatPenerimaan::with('creator')
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->where('created_by', $user->id);
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if ($nama) {
+            $query->where('nama', 'like', "%{$nama}%");
+        }
+
+        $data = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->get();
+
+        // Jika minta filter jenis, lakukan filter manual pada items
+        if ($jenis) {
+            $data = $data->filter(function ($row) use ($jenis) {
+                $items = is_array($row->items) ? $row->items : json_decode($row->items, true);
+                if (empty($items)) return false;
+                foreach ($items as $it) {
+                    if (str_contains(strtolower($it['jenis'] ?? ''), strtolower($jenis))) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        $filename = 'Rekap_Saya_' . $user->name . '_' . str_pad($bulan,2,'0',STR_PAD_LEFT) . '-' . $tahun . '.xlsx';
+
+        return Excel::download(new LaporanExport($data), $filename);
+    }
+
     public function index(Request $request)
     {
         $tanggal = $request->get('tanggal');

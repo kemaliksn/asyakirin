@@ -119,6 +119,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggleActive');
         });
 
+        // Export rekap milik kasir saat ini (kasir & admin boleh akses)
+        Route::get('/laporan/rekap-saya/export', [\App\Http\Controllers\LaporanController::class, 'exportSaya'])->name('laporan.export-saya');
+
         // ── Logout (bersama untuk semua role) ──
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 

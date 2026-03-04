@@ -10,6 +10,28 @@
 <body class="bg-gray-100">
 
 <div class="max-w-4xl mx-auto py-10 px-6">
+    <!-- Identity Header: Asy-Syaakiriin -->
+    <div class="bg-white/90 backdrop-blur rounded-xl shadow mb-6 border border-green-100">
+        <div class="p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+            <img src="{{ asset('icons/logomasjid.png') }}" alt="Logo Asy-Syaakiriin" class="w-14 h-14 md:w-16 md:h-16 object-contain">
+            <div class="flex-1 min-w-0">
+                <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-green-700">Masjid Asy-Syaakiriin</h1>
+                <div class="mt-1 text-sm text-gray-700 leading-snug">
+                    <p class="truncate md:whitespace-normal">Alamat: <span class="font-medium">[Isi alamat lengkap Masjid/YPDI Asy-Syaakiriin]</span></p>
+                    <p class="truncate md:whitespace-normal">Kontak: <span class="font-medium">WA [08xx-xxxx-xxxx]</span> · Email <span class="font-medium">[email@asy-syaakiriin.or.id]</span></p>
+                    <p class="truncate md:whitespace-normal">Website: <a href="#" class="text-green-700 hover:underline font-medium">[https://asy-syaakiriin.or.id]</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="px-5 md:px-6 pb-4 border-t bg-green-50/50 text-xs text-green-800">
+            <div class="pt-3 flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1 bg-white border border-green-200 text-green-800 px-2.5 py-1 rounded-full">Lembaga Amil</span>
+                <span class="inline-flex items-center gap-1 bg-white border border-green-200 text-green-800 px-2.5 py-1 rounded-full">Transparan</span>
+                <span class="inline-flex items-center gap-1 bg-white border border-green-200 text-green-800 px-2.5 py-1 rounded-full">Amanah</span>
+            </div>
+        </div>
+    </div>
+
     @php
     $admin = auth('admin')->user();
     $user = auth('web')->user();
@@ -55,7 +77,7 @@
     <div class="bg-white shadow-lg rounded-lg p-8">
 
         <h1 class="text-3xl font-bold text-green-700 mb-6">
-            Form ZIS
+            Form ZIS (Zakat, Infaq, Shodaqoh)
         </h1>
 
         <form method="POST" action="{{ route('export.pdf') }}" id="zakatForm" enctype="multipart/form-data">
@@ -76,7 +98,17 @@
                 <input type="text" name="nama" class="border p-3 rounded" placeholder="Nama Donatur" required>
                 <input type="text" name="alamat" class="border p-3 rounded" placeholder="Alamat" required>
                 <input type="text" name="telpon" class="border p-3 rounded" placeholder="No. Telpon" required>
-                <input type="text" name="profesi" class="border p-3 rounded" placeholder="Profesi" required>
+                <select name="profesi" class="border p-3 rounded" required>
+                    <option value="" disabled selected>Pilih Profesi</option>
+                    <option value="PNS">PNS</option>
+                    <option value="Pegawai Swasta">Pegawai Swasta</option>
+                    <option value="Wiraswasta">Wiraswasta</option>
+                    <option value="Pedagang">Pedagang</option>
+                    <option value="Guru">Guru</option>
+                    <option value="Pensiunan">Pensiunan</option>
+                    <option value="Pelayan Jasa">Pelayan Jasa</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
                 <input type="number" name="jumlah_jiwa" class="border p-3 rounded" placeholder="Jumlah Jiwa" required>
                 <div id="atasNamaWrapper" class="hidden col-span-2">
                     <label class="block font-medium mb-2">Atas Nama</label>
@@ -450,19 +482,39 @@
                 </h3>
             </div>
 
-            <!-- NIAT ZAKAT -->
-            <h2 class="text-xl font-semibold mb-4">Niat Mengeluarkan Zakat</h2>
+            <!-- NIAT ZAKAT: Maal & Fitrah -->
+            <h2 class="text-xl font-semibold mb-4">Niat Zakat Maal dan Fitrah</h2>
 
-            <div class="bg-gray-50 p-4 rounded mb-6 text-center">
-                <p class="text-2xl mb-2">
-                    نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي فَرْضًا لِلَّهِ تَعَالَى
-                </p>
-                <p class="italic">
-                    "Nawaitu an ukhrija zakata maali fardha lillahi ta’aala"
-                </p>
-                <p class="mt-2">
-                    Saya berniat mengeluarkan zakat harta milikku karena Allah Ta’ala
-                </p>
+            <div class="bg-gray-50 p-4 rounded mb-6">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- Niat Zakat Maal -->
+                    <div class="text-center border border-gray-200 rounded-lg p-4 bg-white">
+                        <p class="text-sm font-semibold text-gray-700 mb-2">Niat Zakat Maal</p>
+                        <p class="text-2xl mb-2">
+                            نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي فَرْضًا لِلَّهِ تَعَالَى
+                        </p>
+                        <p class="italic text-sm">
+                            "Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"
+                        </p>
+                        <p class="mt-2 text-sm text-gray-700">
+                            Saya niat mengeluarkan zakat harta karena Allah Ta’ala.
+                        </p>
+                    </div>
+
+                    <!-- Niat Zakat Fitrah -->
+                    <div class="text-center border border-gray-200 rounded-lg p-4 bg-white">
+                        <p class="text-sm font-semibold text-gray-700 mb-2">Niat Zakat Fitrah</p>
+                        <p class="text-2xl mb-2">
+                            نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ الْفِطْرِ عَن نَفْسِي فَرْضًا لِلَّهِ تَعَالَى
+                        </p>
+                        <p class="italic text-sm">
+                            "Nawaitu an ukhrija zakata al-fithri 'an nafsii fardhan lillahi ta'ala"
+                        </p>
+                        <p class="mt-2 text-sm text-gray-700">
+                            Saya niat menunaikan zakat fitrah untuk diri saya karena Allah Ta’ala.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- section yang muncul saat user tekan lanjut untuk upload bukti -->

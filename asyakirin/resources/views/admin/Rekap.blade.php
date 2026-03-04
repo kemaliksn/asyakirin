@@ -346,6 +346,17 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Export Excel
             </a>
+            @php
+                $bulanQ = request()->get('bulan');
+                $tahunQ = request()->get('tahun');
+                $statusQ = request()->get('status');
+                $jenisQ  = request()->get('jenis');
+                $namaQ   = request()->get('nama');
+            @endphp
+            <a href="{{ route('admin.laporan.export-saya', ['bulan' => $bulanQ, 'tahun' => $tahunQ, 'status' => $statusQ, 'jenis' => $jenisQ, 'nama' => $namaQ]) }}" class="btn-export" style="margin-left:8px;background:linear-gradient(135deg,#145c33,#1a6b3c);">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export Rekap Saya
+            </a>
         </div>
 
         <div style="overflow-x:auto;">
