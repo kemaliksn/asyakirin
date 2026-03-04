@@ -36,7 +36,7 @@ table.header td { color:#ffffff; vertical-align:middle; padding:3pt 5pt; }
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin-top:25pt;
+    margin-top:15pt;
 }
 
 /* MAIN */
@@ -118,7 +118,7 @@ table.footer {
     background-color:#1a7a3c;
     border-collapse:collapse;
     flex-shrink: 0;
-    margin-top: 20pt;
+    margin-top: 10pt;
 }
 table.footer td { color:#ffffff; padding:3pt 5pt; vertical-align:middle; font-size:7pt; }
 td.f-contact { width:32%; line-height:1.5; }
@@ -273,15 +273,15 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
             "Semoga Allah memberikan ganjaran pahala &nbsp;terhadap harta yang telah<br>
             engkau berikan dan menjadikannya penyuci bagimu."
         </div> -->
-        <div style="margin-top:6pt;">
-            <div style="font-weight:bold; text-align:center; font-size:7.5pt; margin-bottom:2pt;">Niat Zakat Maal</div>
-            <div style="font-family: DejaVu Sans, sans-serif; font-size:9pt; text-align:right; direction:rtl; line-height:1.35;">نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي فَرْضًا لِلَّهِ تَعَالَى</div>
-            <div style="font-style:italic; font-size:6.8pt; text-align:center; color:#333;">"Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"</div>
+        <div style="margin-top:3pt;">
+            <div style="font-weight:bold; text-align:center; font-size:7pt; margin-bottom:1pt;">Niat Zakat Maal</div>
+            <div style="font-family: DejaVu Sans, sans-serif; font-size:8.5pt; text-align:right; direction:rtl; line-height:1.2;">نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي فَرْضًا لِلَّهِ تَعَالَى</div>
+            <div style="font-style:italic; font-size:6.5pt; text-align:center; color:#333;">"Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"</div>
         </div>
-        <div style="margin-top:5pt;">
-            <div style="font-weight:bold; text-align:center; font-size:7.5pt; margin-bottom:2pt;">Niat Zakat Fitrah</div>
-            <div style="font-family: DejaVu Sans, sans-serif; font-size:9pt; text-align:right; direction:rtl; line-height:1.35;">نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ الْفِطْرِ عَن نَفْسِي فَرْضًا لِلَّهِ تَعَالَى</div>
-            <div style="font-style:italic; font-size:6.8pt; text-align:center; color:#333;">"Nawaitu an ukhrija zakata al-fithri 'an nafsii fardhan lillahi ta'ala"</div>
+        <div style="margin-top:2pt;">
+            <div style="font-weight:bold; text-align:center; font-size:7pt; margin-bottom:1pt;">Niat Zakat Fitrah</div>
+            <div style="font-family: DejaVu Sans, sans-serif; font-size:8.5pt; text-align:right; direction:rtl; line-height:1.2;">نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ الْفِطْرِ عَن نَفْسِي فَرْضًا لِلَّهِ تَعَالَى</div>
+            <div style="font-style:italic; font-size:6.5pt; text-align:center; color:#333;">"Nawaitu an ukhrija zakata al-fithri 'an nafsii fardhan lillahi ta'ala"</div>
         </div>
     </td>
     {{-- ← TTD rata kanan dengan text-align:right pada td, konten di dalam tetap kiri --}}
