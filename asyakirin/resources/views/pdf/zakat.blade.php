@@ -268,20 +268,9 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 <table class="bottom" cellspacing="0" cellpadding="0">
 <tr>
     <td class="b-arabic">
-        <!-- <div class="arabic-text">آجَرَكَ اللهُ فِيْمَا اَعْطَيْتَ، وَبَارَكَ فِيْمَا اَبْقَيْتَ وَجَعَلَهُ لَكَ طَهُوْرًا</div>
-        <div class="arabic-trans">
-            "Semoga Allah memberikan ganjaran pahala &nbsp;terhadap harta yang telah<br>
-            engkau berikan dan menjadikannya penyuci bagimu."
-        </div> -->
         <div style="margin-top:3pt;">
-            <div style="font-weight:bold; text-align:center; font-size:7pt; margin-bottom:1pt;">Niat Zakat Maal</div>
-            <div style="font-family: DejaVu Sans, sans-serif; font-size:8.5pt; text-align:right; direction:rtl; line-height:1.2;">نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي فَرْضًا لِلَّهِ تَعَالَى</div>
-            <div style="font-style:italic; font-size:6.5pt; text-align:center; color:#333;">"Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"</div>
-        </div>
-        <div style="margin-top:2pt;">
-            <div style="font-weight:bold; text-align:center; font-size:7pt; margin-bottom:1pt;">Niat Zakat Fitrah</div>
-            <div style="font-family: DejaVu Sans, sans-serif; font-size:8.5pt; text-align:right; direction:rtl; line-height:1.2;">نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ الْفِطْرِ عَن نَفْسِي فَرْضًا لِلَّهِ تَعَالَى</div>
-            <div style="font-style:italic; font-size:6.5pt; text-align:center; color:#333;">"Nawaitu an ukhrija zakata al-fithri 'an nafsii fardhan lillahi ta'ala"</div>
+            {{-- Image for Niat Zakat --}}
+            <img src="{{ public_path('icons/doaamil.png') }}" alt="Niat Zakat" style="width:460px; height:180px; display:block; margin: left 200px; auto;">
         </div>
     </td>
     {{-- ← TTD rata kanan dengan text-align:right pada td, konten di dalam tetap kiri --}}
