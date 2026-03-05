@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Pengurus - ASY-SYAAKIRIIN</title>
+    <title>Login Petugas - ASY-SYAAKIRIIN</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
@@ -11,7 +11,7 @@
 <div class="max-w-md mx-auto py-20 px-6">
     <div class="bg-white shadow-lg rounded-lg p-8">
         <h1 class="text-2xl font-bold text-green-700 mb-6 text-center">
-            Login Pengurus
+            Login Petugas
         </h1>
 
         @if($errors->any())
