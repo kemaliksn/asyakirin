@@ -47,6 +47,8 @@
         .btn-danger:hover { opacity: .88; }
         .btn-secondary { background: #f1f7f3; color: #555; border: 1px solid #d3e8da; border-radius: 9px; padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
         .btn-secondary:hover { background: #daf0e4; }
+        .btn-print { background: #3b82f6; color: #fff; border: none; border-radius: 9px; padding: 8px 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-print:hover { opacity: .88; }
         img.bukti { max-width: 240px; border: 1px solid #d3e8da; border-radius: 8px; }
     </style>
 </head>
@@ -253,6 +255,18 @@
             @if(in_array($currentUser->role, ['admin','kasir']))
             <div class="form-row" style="margin-top:20px; gap:10px;">
                 <button type="submit" class="btn-primary">Simpan Perubahan</button>
+            </div>
+            @endif
+            
+            {{-- CETAK ULANG INVOICE - HANYA ADMIN --}}
+            @if($currentUser->role === 'admin')
+            <div class="form-row" style="margin-top:20px; gap:10px; padding-top:20px; border-top:1px solid #e2ece6;">
+                <a href="{{ route('zakat.cetak-ulang', $record->id) }}" target="_blank" class="btn-print">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    Cetak Ulang Invoice
+                </a>
             </div>
             @endif
         </form>

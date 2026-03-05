@@ -308,6 +308,20 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @php
+                                        $isAdmin = false;
+                                        if ((auth('admin')->check() && auth('admin')->user()->role === 'admin') || 
+                                            (auth('web')->check() && auth('web')->user()->role === 'admin')) {
+                                            $isAdmin = true;
+                                        }
+                                    @endphp
+                                    @if($isAdmin)
+                                    <a href="{{ route('zakat.cetak-ulang', $row->id) }}" target="_blank"
+                                       style="color:#3b82f6;font-size:12px;font-weight:600;text-decoration:none;margin-right:8px;"
+                                       title="Cetak Ulang Invoice">
+                                        🖨️ Cetak
+                                    </a>
+                                    @endif
                                     <a href="{{ route('admin.transaksi.show', $row->id) }}"
                                        style="color:#1a6b3c;font-size:12px;font-weight:600;text-decoration:none;">
                                         Detail

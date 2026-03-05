@@ -202,10 +202,24 @@ class ZakatController extends Controller
 
     /**
      * Cetak ulang PDF dari data yang sudah tersimpan di DB.
+     * HANYA ADMIN yang boleh mengakses fitur ini.
      * Route: GET /zakat/{id}/cetak
      */
     public function cetakUlang(int $id)
     {
+        // Cek apakah user adalah admin (dari guard admin atau web dengan role admin)
+        $isAdmin = false;
+        
+        if (auth('admin')->check() && auth('admin')->user()->role === 'admin') {
+            $isAdmin = true;
+        } elseif (auth('web')->check() && auth('web')->user()->role === 'admin') {
+            $isAdmin = true;
+        }
+        
+        if (!$isAdmin) {
+            abort(403, 'Akses ditolak. Hanya admin yang dapat mencetak ulang invoice.');
+        }
+
         $zakat = ZakatPenerimaan::findOrFail($id);
 
         $data = [
