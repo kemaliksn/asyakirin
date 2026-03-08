@@ -63,8 +63,10 @@ Route::get('/', function () {
 
 // Export PDF dan cetak (hanya kasir dan admin, dari form publik atau admin)
 Route::post('/zakat/export-pdf', [ZakatController::class, 'exportPdf'])->name('export.pdf');
-// Cetak ulang invoice - admin dan kasir boleh akses (dijaga oleh AdminAuth yang membolehkan kasir/pengurus)
+// Cetak ulang internal (admin & kasir): butuh login
 Route::middleware('admin.auth')->get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
+// Cetak publik (donatur via WA): tanpa login
+Route::get('/zakat/{id}/invoice', [ZakatController::class, 'publicInvoice'])->name('zakat.public-invoice');
 // Halaman invoice-ready (hanya untuk yang login)
 Route::middleware('admin.auth')->group(function () {
     Route::get('/zakat/{id}/invoice-ready', [ZakatController::class, 'invoiceReady'])->name('zakat.invoice-ready');

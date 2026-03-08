@@ -23,7 +23,7 @@
         </div>
 
         <?php
-            $downloadUrl = route('zakat.cetak-ulang', $zakat->id);
+            $downloadUrl = route('zakat.public-invoice', $zakat->id);
             // Normalisasi nomor telepon: hilangkan non-digit, ganti prefix 0 jadi 62
             $raw = preg_replace('/[^0-9+]/', '', (string)($zakat->telpon ?? ''));
             if (strpos($raw, '+') === 0) { $raw = substr($raw, 1); }

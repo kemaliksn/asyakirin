@@ -254,6 +254,47 @@ class ZakatController extends Controller
     }
 
     /**
+     * Cetak/unduh invoice publik tanpa login (untuk donatur via tautan WA)
+     * Route: GET /zakat/{id}/invoice
+     */
+    public function publicInvoice(int $id)
+    {
+        $zakat = ZakatPenerimaan::findOrFail($id);
+
+        $data = [
+            'nomor'          => $zakat->nomor,
+            'nama'           => $zakat->nama,
+            'alamat'         => $zakat->alamat,
+            'telpon'         => $zakat->telpon,
+            'profesi'        => $zakat->profesi,
+            'jumlah_jiwa'    => $zakat->jumlah_jiwa,
+            'atas_nama'      => $zakat->atas_nama ?? [],
+            'items'          => $zakat->items ?? [],
+            'bank'           => $zakat->bank ?? null,
+            'terbilang'      => $zakat->terbilang,
+            'tanggal'        => $zakat->tanggal->isoFormat('D MMMM Y'),
+            'nama_amil'      => $zakat->nama_amil,
+            'daily_sequence' => $zakat->daily_sequence,
+        ];
+
+        $pdf = Pdf::loadView('pdf.zakat', compact('data'))
+            ->setPaper('A5', 'landscape')
+            ->setOption([
+                'defaultFont'          => 'DejaVu Sans',
+                'isRemoteEnabled'      => true,
+                'isHtml5ParserEnabled' => true,
+                'dpi'                  => 150,
+                'margin_top'           => 0,
+                'margin_right'         => 0,
+                'margin_bottom'        => 0,
+                'margin_left'          => 0,
+            ]);
+
+        $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+        return $pdf->stream($filename);
+    }
+
+    /**
      * Halaman konfirmasi setelah simpan (untuk kasir/admin):
      * berisi tombol Download Invoice & Kirim via WhatsApp
      */
