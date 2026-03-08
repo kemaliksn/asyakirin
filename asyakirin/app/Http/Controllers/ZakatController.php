@@ -207,17 +207,15 @@ class ZakatController extends Controller
      */
     public function cetakUlang(int $id)
     {
-        // Cek apakah user adalah admin (dari guard admin atau web dengan role admin)
-        $isAdmin = false;
-        
-        if (auth('admin')->check() && auth('admin')->user()->role === 'admin') {
-            $isAdmin = true;
-        } elseif (auth('web')->check() && auth('web')->user()->role === 'admin') {
-            $isAdmin = true;
-        }
-        
-        if (!$isAdmin) {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mencetak ulang invoice.');
+        // Izinkan ADMIN dan KASIR mencetak ulang
+        $isAdmin = (auth('admin')->check() && auth('admin')->user()->role === 'admin')
+            || (auth('web')->check() && auth('web')->user()->role === 'admin');
+
+        $isKasir = (auth('admin')->check() && auth('admin')->user()->role === 'kasir')
+            || (auth('web')->check() && auth('web')->user()->role === 'kasir');
+
+        if (!($isAdmin || $isKasir)) {
+            abort(403, 'Akses ditolak. Hanya admin atau kasir yang dapat mencetak ulang invoice.');
         }
 
         $zakat = ZakatPenerimaan::findOrFail($id);

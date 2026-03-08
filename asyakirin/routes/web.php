@@ -63,8 +63,8 @@ Route::get('/', function () {
 
 // Export PDF dan cetak (hanya kasir dan admin, dari form publik atau admin)
 Route::post('/zakat/export-pdf', [ZakatController::class, 'exportPdf'])->name('export.pdf');
-// Cetak ulang invoice - hanya admin yang boleh akses
-Route::middleware('admin.only')->get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
+// Cetak ulang invoice - admin dan kasir boleh akses (dijaga oleh AdminAuth yang membolehkan kasir/pengurus)
+Route::middleware('admin.auth')->get('/zakat/{id}/cetak', [ZakatController::class, 'cetakUlang'])->name('zakat.cetak-ulang');
 // Halaman invoice-ready (hanya untuk yang login)
 Route::middleware('admin.auth')->group(function () {
     Route::get('/zakat/{id}/invoice-ready', [ZakatController::class, 'invoiceReady'])->name('zakat.invoice-ready');

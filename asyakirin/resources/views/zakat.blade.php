@@ -216,7 +216,7 @@
             <!-- SCRIPT ZAKAT -->
             <script>
                 // nilai default per jiwa diambil dari konfigurasi
-                const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 30000)}};
+                const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 52000)}};
 
                 function updateTable() {
 
