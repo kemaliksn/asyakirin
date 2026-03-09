@@ -463,7 +463,8 @@
                 </div>
 
 
-                <!-- Cash -->
+                <!-- Cash - Hanya untuk petugas (login) -->
+                @if(auth('web')->check() || auth('admin')->check())
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         {{-- <img src="{{ asset('icons/cash.png') }}" class="w-10 h-10 object-contain"> --}}
@@ -472,6 +473,7 @@
                     <input type="radio" name="bank" value="Cash"
                         class="w-5 h-5 accent-green-600">
                 </label>
+                @endif
 
             </div>
 

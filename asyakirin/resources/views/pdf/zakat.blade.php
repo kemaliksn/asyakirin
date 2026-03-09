@@ -214,7 +214,7 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 {{-- KANAN --}}
 <td class="col-right">
     @php
-        $jenisList = ['Zakat Fitrah','Zakat Maal','Infaq – Shodaqoh','Yatim','Fidyah'];
+        $jenisList = ['Zakat Fitrah','Zakat Maal','Infaq - Shodaqoh','Yatim','Fidyah'];
         $itemMap   = [];
         $totalUang = 0; $totalBeras = 0;
         foreach (($data['items'] ?? []) as $it) {
