@@ -17,9 +17,9 @@
             <div class="flex-1 min-w-0">
                 <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-green-700">Masjid Asy-Syaakiriin</h1>
                 <div class="mt-1 text-sm text-gray-700 leading-snug">
-                    <p class="truncate md:whitespace-normal">Alamat: <span class="font-medium">[Isi alamat lengkap Masjid/YPDI Asy-Syaakiriin]</span></p>
-                    <p class="truncate md:whitespace-normal">Kontak: <span class="font-medium">WA [08xx-xxxx-xxxx]</span> · Email <span class="font-medium">[email@asy-syaakiriin.or.id]</span></p>
-                    <p class="truncate md:whitespace-normal">Website: <a href="#" class="text-green-700 hover:underline font-medium">[https://asy-syaakiriin.or.id]</a></p>
+                    <p class="truncate md:whitespace-normal">Alamat: <span class="font-medium">Jln. Gading Raya, RT. 008, RW. 008, Kel. Pondok Bambu, Kec. Duren Sawit, Jakarta timur</span></p>
+                    <p class="truncate md:whitespace-normal">Kontak: <span class="font-medium">WA 0851 1156 2500</span> · Email <span class="font-medium">ypdiaspb@gmail.com</span></p>
+                    <p class="truncate md:whitespace-normal">Website: <a href="#" class="text-green-700 hover:underline font-medium">https://asy-syaakiriin.com</a></p>
                 </div>
             </div>
         </div>

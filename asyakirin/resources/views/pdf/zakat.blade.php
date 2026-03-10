@@ -214,6 +214,7 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
 {{-- KANAN --}}
 <td class="col-right">
     @php
+
         $jenisList = ['Zakat Fitrah','Zakat Maal','Infaq - Shodaqoh','Yatim','Fidyah'];
         $itemMap   = [];
         $totalUang = 0; $totalBeras = 0;
@@ -243,13 +244,13 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
                     <td class="t-no">{{ $idx+1 }}.</td>
                     <td>{{ $jn }}</td>
                     <td class="t-uang">Rp.&nbsp;@if($u > 0){{ number_format($u,0,',','.') }}@endif</td>
-                    <td class="t-beras">@if($b > 0){{ number_format($b,1,',','.') }}@endif&nbsp;Lt/Kg</td>
+                    <td class="t-beras">@if($b > 0){{ number_format($b,1,',','.') }}@endif&nbsp;Kg</td>
                 </tr>
             @endforeach
             <tr class="tr-total">
                 <td colspan="2" class="t-no" style="text-align:center;">Jumlah</td>
                 <td class="t-uang">Rp.&nbsp;@if($totalUang > 0){{ number_format($totalUang,0,',','.') }}@endif</td>
-                <td class="t-beras">@if($totalBeras > 0){{ number_format($totalBeras,1,',','.') }}@endif&nbsp;Lt/Kg</td>
+                <td class="t-beras">@if($totalBeras > 0){{ number_format($totalBeras,1,',','.') }}@endif&nbsp;Kg</td>
             </tr>
             <tr>
                 <td colspan="4" class="t-terb">
