@@ -192,8 +192,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
     </button> --}}
     <div class="admin-chip">
-        <div class="admin-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
-        <span style="font-size:13px;font-weight:600;color:#222;">{{ auth()->user()->name ?? 'Admin Ahmad' }}</span>
+        @php $currentUser = auth('admin')->check() ? auth('admin')->user() : auth('web')->user(); @endphp
+        <div class="admin-avatar">{{ strtoupper(substr($currentUser->name ?? 'A', 0, 1)) }}</div>
+        <span style="font-size:13px;font-weight:600;color:#222;">{{ $currentUser->name ?? 'Admin' }}</span>
     </div>
 </header>
 
@@ -202,11 +203,11 @@
 <div class="content-inner">
 
     <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-        <span class="sep">/</span>
-        <span class="active">Rekap Zakat dan Donasi</span>
-    </div>
+    <!--<div class="breadcrumb">-->
+    <!--    <a href="{{ route('admin.dashboard') }}">Dashboard</a>-->
+    <!--    <span class="sep">/</span>-->
+    <!--    <span class="active">Rekap Zakat dan Donasi</span>-->
+    <!--</div>-->
 
     <!-- Page Title -->
     <h1 class="page-title">Rekap Zakat <span>dan Donasi</span></h1>

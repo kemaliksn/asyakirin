@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/png" href="{{ asset('icons/logomasjid.png') }}">
     <style>
         * { font-family: 'Plus Jakarta Sans', sans-serif; }
         :root { --green-primary: #1a6b3c; --green-mid: #22813f; }
@@ -310,7 +311,7 @@
                                 <td>
                                     @php
                                         $isAdmin = false;
-                                        if ((auth('admin')->check() && auth('admin')->user()->role === 'admin') || 
+                                        if ((auth('admin')->check() && auth('admin')->user()->role === 'admin') ||
                                             (auth('web')->check() && auth('web')->user()->role === 'admin')) {
                                             $isAdmin = true;
                                         }

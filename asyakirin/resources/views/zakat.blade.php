@@ -122,18 +122,18 @@
             </h2>
 
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                <label><input type="checkbox"   value="Zakat Fitrah" onchange="updateTable()" class="mr-2 zakat"> Zakat Fitrah</label>
-                <label><input type="checkbox"   value="Zakat Maal" onchange="updateTable()" class="mr-2 zakat"> Zakat Maal</label>
-                <label><input type="checkbox"   value="Infaq - Shodaqoh" onchange="updateTable()" class="mr-2 zakat"> Infaq - Shodaqoh</label>
-                <label><input type="checkbox"   value="Yatim" onchange="updateTable()" class="mr-2 zakat"> Yatim</label>
-                <label><input type="checkbox"   value="Fidyah" onchange="updateTable()" class="mr-2 zakat"> Fidyah</label>
+                <label><input type="checkbox" value="Zakat Fitrah" onchange="updateTable()" class="mr-2 zakat"> Zakat Fitrah</label>
+                <label><input type="checkbox" value="Zakat Maal" onchange="updateTable()" class="mr-2 zakat"> Zakat Maal</label>
+                <label><input type="checkbox" value="Infaq - Shodaqoh" onchange="updateTable()" class="mr-2 zakat"> Infaq - Shodaqoh</label>
+                <label><input type="checkbox" value="Yatim" onchange="updateTable()" class="mr-2 zakat"> Yatim</label>
+                <label><input type="checkbox" value="Fidyah" onchange="updateTable()" class="mr-2 zakat"> Fidyah</label>
             </div>
 
             <!-- INFO FIDYAH & ZAKAT FITRAH -->
             <div class="grid md:grid-cols-2 gap-4 mb-6">
 
-                   <!-- Zakat Fitrah Card -->
-                   <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-5">
+                <!-- Zakat Fitrah Card -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-5">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="bg-green-600 text-white p-2 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -152,7 +152,6 @@
                         </p>
                     </div>
                 </div>
-
 
                 <!-- Fidyah Card -->
                 <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-5">
@@ -174,7 +173,6 @@
                         </p>
                     </div>
                 </div>
-
 
             </div>
 
@@ -215,28 +213,25 @@
 
             <!-- SCRIPT ZAKAT -->
             <script>
-                // nilai default per jiwa diambil dari konfigurasi
                 const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 52000)}};
 
-                function updateTable() {
+                // ── Helper: strip titik & koma ribuan, terima angka murni ──
+                function parseRupiah(val) {
+                    return parseInt(String(val).replace(/\./g, '').replace(/,/g, '')) || 0;
+                }
 
+                function updateTable() {
                     let tbody = document.getElementById('tableBody');
                     let checkboxes = document.querySelectorAll('.zakat');
 
                     checkboxes.forEach(cb => {
-
                         let existingRow = document.getElementById('row-' + cb.value);
 
-                        // Jika dicentang & belum ada row → tambahkan
                         if (cb.checked && !existingRow) {
-
-                            let rowCount = tbody.children.length + 1;
-
                             let row = document.createElement("tr");
                             row.id = 'row-' + cb.value;
 
                             if (cb.value === 'Zakat Fitrah') {
-                                // row spesial: input rate dan hitung total otomatis
                                 row.innerHTML = `
                                     <td class="border p-2 row-no"></td>
                                     <td class="border p-2">
@@ -245,17 +240,16 @@
                                     </td>
                                     <td class="border p-2">
                                         <div class="flex flex-col">
-                                            <input type="number" name="fitrah_rate[]" class="fitrah-rate w-full p-1 border rounded" placeholder="Rp per jiwa" value="${DEFAULT_FITRAH_RATE}" oninput="updateFitrah()">
+                                            <input type="text" name="fitrah_rate[]" class="fitrah-rate w-full p-1 border rounded" placeholder="Rp per jiwa" value="" oninput="updateFitrah()">
                                             <span class="text-sm text-gray-500 mt-1">Total: Rp <span class="fitrah-total">0</span></span>
                                             <input type="hidden" name="uang[]" class="uang">
                                         </div>
                                     </td>
                                     <td class="border p-2">
-                                        <input type="number" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
+                                        <input type="text" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
                                     </td>
                                 `;
                             } else {
-                                // row biasa
                                 row.innerHTML = `
                                     <td class="border p-2 row-no"></td>
                                     <td class="border p-2">
@@ -263,10 +257,10 @@
                                         <input type="hidden" name="jenis[]" value="${cb.value}">
                                     </td>
                                     <td class="border p-2">
-                                        <input type="number" name="uang[]" class="uang w-full p-1 border rounded" oninput="hitungTotal()">
+                                        <input type="text" name="uang[]" class="uang w-full p-1 border rounded" oninput="hitungTotal()">
                                     </td>
                                     <td class="border p-2">
-                                        <input type="number" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
+                                        <input type="text" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
                                     </td>
                                 `;
                             }
@@ -278,7 +272,6 @@
                             }
                         }
 
-                        // Jika tidak dicentang & ada row → hapus
                         if (!cb.checked && existingRow) {
                             existingRow.remove();
                         }
@@ -286,7 +279,7 @@
 
                     updateRowNumber();
                     hitungTotal();
-                    }
+                }
 
                 function updateRowNumber() {
                     let rows = document.querySelectorAll('#tableBody tr');
@@ -295,36 +288,31 @@
                     });
                 }
 
-
                 function hitungTotal() {
-
                     let totalUang = 0;
                     let totalBeras = 0;
 
                     document.querySelectorAll('.uang').forEach(input => {
-                        totalUang += parseInt(input.value) || 0;
+                        totalUang += parseRupiah(input.value);
                     });
 
                     document.querySelectorAll('.beras').forEach(input => {
-                        totalBeras += parseInt(input.value) || 0;
+                        totalBeras += parseRupiah(input.value);
                     });
 
-                    // Total di table
                     document.getElementById('totalUang').innerText =
                         new Intl.NumberFormat('id-ID').format(totalUang);
 
                     document.getElementById('totalBeras').innerText = totalBeras;
 
-                    // 🔥 Total bawah (sinkron)
                     document.getElementById('total').innerText =
                         new Intl.NumberFormat('id-ID').format(totalUang);
 
-                    // Terbilang
                     document.getElementById('terbilang').innerText =
                         totalUang > 0
                             ? terbilang(totalUang).replace(/\s+/g,' ').trim() + " rupiah"
                             : "";
-                    }
+                }
 
                 function terbilang(n) {
                     n = Math.floor(n);
@@ -334,39 +322,18 @@
                         "sepuluh", "sebelas"
                     ];
 
-                    if (n < 12)
-                        return angka[n];
-
-                    else if (n < 20)
-                        return terbilang(n - 10) + " belas";
-
-                    else if (n < 100)
-                        return terbilang(Math.floor(n / 10)) + " puluh " + terbilang(n % 10);
-
-                    else if (n < 200)
-                        return "seratus " + terbilang(n - 100);
-
-                    else if (n < 1000)
-                        return terbilang(Math.floor(n / 100)) + " ratus " + terbilang(n % 100);
-
-                    else if (n < 2000)
-                        return "seribu " + terbilang(n - 1000);
-
-                    else if (n < 1000000)
-                        return terbilang(Math.floor(n / 1000)) + " ribu " + terbilang(n % 1000);
-
-                    else if (n < 1000000000)
-                        return terbilang(Math.floor(n / 1000000)) + " juta " + terbilang(n % 1000000);
-
-                    else if (n < 1000000000000)
-                        return terbilang(Math.floor(n / 1000000000)) + " milyar " + terbilang(n % 1000000000);
-
-                    else if (n < 1000000000000000)
-                        return terbilang(Math.floor(n / 1000000000000)) + " triliun " + terbilang(n % 1000000000000);
-
-                    else
-                        return "";
-                    }
+                    if (n < 12)        return angka[n];
+                    else if (n < 20)   return terbilang(n - 10) + " belas";
+                    else if (n < 100)  return terbilang(Math.floor(n / 10)) + " puluh " + terbilang(n % 10);
+                    else if (n < 200)  return "seratus " + terbilang(n - 100);
+                    else if (n < 1000) return terbilang(Math.floor(n / 100)) + " ratus " + terbilang(n % 100);
+                    else if (n < 2000) return "seribu " + terbilang(n - 1000);
+                    else if (n < 1000000)          return terbilang(Math.floor(n / 1000)) + " ribu " + terbilang(n % 1000);
+                    else if (n < 1000000000)        return terbilang(Math.floor(n / 1000000)) + " juta " + terbilang(n % 1000000);
+                    else if (n < 1000000000000)     return terbilang(Math.floor(n / 1000000000)) + " milyar " + terbilang(n % 1000000000);
+                    else if (n < 1000000000000000)  return terbilang(Math.floor(n / 1000000000000)) + " triliun " + terbilang(n % 1000000000000);
+                    else return "";
+                }
             </script>
 
             <!-- METODE PEMBAYARAN -->
@@ -374,71 +341,20 @@
 
             <div class="space-y-3 mb-6">
 
-                <!-- BNI -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/bni.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Negara Indonesia</span>
-                    </div>
-                    <input type="radio" name="bank" value="BNI"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
-                <!-- BCA -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/bca.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Central Asia</span>
-                    </div>
-                    <input type="radio" name="bank" value="BCA"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
-                <!-- Mandiri -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/mandiri.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Mandiri</span>
-                    </div>
-                    <input type="radio" name="bank" value="Mandiri"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
                 <!-- BSI -->
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('icons/bsi.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">Bank Syariah Indonesia</span>
                     </div>
-                    <input type="radio" name="bank" value="BSI"
-                        class="w-5 h-5 accent-green-600">
+                    <input type="radio" name="bank" value="BSI" class="w-5 h-5 accent-green-600">
                 </label>
-                <!-- BSI DETAIL (hidden by default) -->
+                <!-- BSI DETAIL -->
                 <div id="bsi-detail" class="hidden border border-dashed rounded-lg p-4 mt-3 bg-gray-50">
                     <p class="font-semibold mb-1">Rekening Zakat</p>
                     <div class="text-lg font-bold text-green-700 tracking-wider">450.450.4560</div>
                     <div class="text-sm text-gray-700 mt-1">an : YPDI ASY-SYAAKIRIIN PONDOK BAMBU</div>
                 </div>
-
-                <!-- Muamalat -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/muamalat.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Muamalat</span>
-                    </div>
-                    <input type="radio" name="bank" value="Muamalat"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
-                <!-- BRI -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/bri.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Rakyat Indonesia</span>
-                    </div>
-                    <input type="radio" name="bank" value="BRI"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
 
                 <!-- QRIS -->
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
@@ -446,32 +362,24 @@
                         <img src="{{ asset('icons/qris.png') }}" class="w-10 h-10 object-contain">
                         <span class="font-medium">QRIS</span>
                     </div>
-                    <input type="radio" name="bank" value="QRIS"
-                        class="w-5 h-5 accent-green-600"
-                        onchange="toggleQRIS(this)">
+                    <input type="radio" name="bank" value="QRIS" class="w-5 h-5 accent-green-600">
                 </label>
-
-                <!-- QRIS DETAIL (hidden by default) -->
+                <!-- QRIS DETAIL -->
                 <div id="qris-detail" class="hidden border border-dashed rounded-lg p-4 mt-3 bg-gray-50">
                     <p class="font-semibold mb-2">Scan QRIS</p>
-                    <img src="{{ asset('icons/qris-code.png') }}"
-                        alt="QRIS"
-                        class="w-68 mx-auto object-contain">
+                    <img src="{{ asset('icons/qris-code.png') }}" alt="QRIS" class="w-68 mx-auto object-contain">
                     <p class="text-sm text-center text-gray-600 mt-2">
                         Gunakan aplikasi e-wallet / mobile banking Anda
                     </p>
                 </div>
 
-
                 <!-- Cash - Hanya untuk petugas (login) -->
                 @if(auth('web')->check() || auth('admin')->check())
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
-                        {{-- <img src="{{ asset('icons/cash.png') }}" class="w-10 h-10 object-contain"> --}}
                         <span class="font-medium">Cash</span>
                     </div>
-                    <input type="radio" name="bank" value="Cash"
-                        class="w-5 h-5 accent-green-600">
+                    <input type="radio" name="bank" value="Cash" class="w-5 h-5 accent-green-600">
                 </label>
                 @endif
 
@@ -499,7 +407,7 @@
                             "Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"
                         </p>
                         <p class="mt-2 text-sm text-gray-700">
-                            Saya niat mengeluarkan zakat harta karena Allah Ta’ala.
+                            Saya niat mengeluarkan zakat harta karena Allah Ta'ala.
                         </p>
                     </div>
 
@@ -513,7 +421,7 @@
                             "Nawaitu an ukhrija zakata al-fithri 'an nafsii fardhan lillahi ta'ala"
                         </p>
                         <p class="mt-2 text-sm text-gray-700">
-                            Saya niat menunaikan zakat fitrah untuk diri saya karena Allah Ta’ala.
+                            Saya niat menunaikan zakat fitrah untuk diri saya karena Allah Ta'ala.
                         </p>
                     </div>
                 </div>
@@ -523,7 +431,7 @@
             @unless(auth('web')->check() || auth('admin')->check())
             <div id="buktiSection" class="hidden mt-4">
                 <label class="block mb-2 font-medium">Unggah Bukti Pembayaran</label>
-                <input type="file" name="bukti" id="buktiInput" accept="image/*" class="border p-2 rounded w/full">
+                <input type="file" name="bukti" id="buktiInput" accept="image/*" class="border p-2 rounded w-full">
                 <p class="text-sm text-gray-600 mt-1">Foto / screenshot transaksi</p>
             </div>
             @endunless
@@ -537,7 +445,6 @@
                 {{ (auth('web')->check() || auth('admin')->check()) ? 'Simpan & Cetak' : 'LANJUTKAN PEMBAYARAN' }}
             </button>
 
-
         </form>
     </div>
 </div>
@@ -546,10 +453,14 @@
 <script>
     function validateForm(button) {
 
+        // ── Normalisasi semua input uang & beras: strip titik & koma sebelum submit ──
+        document.querySelectorAll('.uang, .beras').forEach(input => {
+            input.value = String(input.value).replace(/\./g, '').replace(/,/g, '');
+        });
+
         let errors = [];
 
         @unless(auth('web')->check() || auth('admin')->check())
-        // user harus memilih bukti ketika form pengupload sudah terlihat
         const buktiInput = document.getElementById('buktiInput');
         const buktiSection = document.getElementById('buktiSection');
         if (!buktiSection.classList.contains('hidden')) {
@@ -564,10 +475,8 @@
             return;
         }
 
-        // 🔥 kunci tombol
         button.disabled = true;
         button.innerText = "Memproses...";
-
         document.getElementById('zakatForm').submit();
     }
 
@@ -575,18 +484,14 @@
         @unless(auth('web')->check() || auth('admin')->check())
         const buktiSection = document.getElementById('buktiSection');
         if (buktiSection.classList.contains('hidden')) {
-            // tampilkan form upload saja
             buktiSection.classList.remove('hidden');
             button.innerText = 'UPLOAD BUKTI & CETAK';
             return;
         }
         @endunless
-        // lanjut ke validasi / submit
         validateForm(button);
     }
-
 </script>
-
 
 <!-- SCRIPT QRIS -->
 <script>
@@ -623,49 +528,41 @@
             let rateInput = fitrahRow.querySelector('.fitrah-rate');
             let totalSpan = fitrahRow.querySelector('.fitrah-total');
             let uangInput = fitrahRow.querySelector('input[name="uang[]"]');
-            let rate = parseInt(rateInput.value) || 0;
+            let rate  = parseRupiah(rateInput.value);
             let total = rate * jumlah;
             totalSpan.innerText = new Intl.NumberFormat('id-ID').format(total);
-            uangInput.value = total;
+            uangInput.value = total; // simpan angka murni di hidden field
         }
         hitungTotal();
     }
 
     jumlahJiwaInput.addEventListener('input', function () {
-
         let jumlah = parseInt(this.value) || 0;
 
         container.innerHTML = "";
 
         if (jumlah > 1) {
-
             wrapper.classList.remove('hidden');
 
             for (let i = 2; i <= jumlah; i++) {
-
                 let input = document.createElement("input");
                 input.type = "text";
                 input.name = "atas_nama[]";
                 input.placeholder = "Nama Jiwa ke-" + i;
                 input.className = "border p-3 rounded w-full atas-nama";
-
                 container.appendChild(input);
             }
-
         } else {
             wrapper.classList.add('hidden');
         }
 
-        // jika fitrah sudah dicentang, hitung ulang
         updateFitrah();
         hitungTotal();
     });
 </script>
 
-
-
 @if(!(auth('web')->check() || auth('admin')->check()))
-<a href="https://wa.me/6281234567890?text=Assalamu%27alaikum%20Saya%20butuh%20bantuan" class="wa-call-center" target="_blank" rel="noopener" aria-label="WhatsApp Call Center">
+<a href="https://wa.me/6285111562500?text=Assalamu%27alaikum%20Saya%20butuh%20bantuan" class="wa-call-center" target="_blank" rel="noopener" aria-label="WhatsApp Call Center">
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" role="img">
         <path fill="currentColor" d="M20.52 3.48A11.94 11.94 0 0 0 12.01 0C5.39 0 .02 5.37.02 11.99c0 2.11.55 4.16 1.6 5.99L0 24l6.19-1.62a11.97 11.97 0 0 0 5.82 1.51h.01c6.62 0 11.99-5.37 11.99-11.99 0-3.2-1.25-6.21-3.49-8.43ZM12.01 22.1h-.01a10.08 10.08 0 0 1-5.14-1.41l-.37-.22-3.67.96.98-3.57-.24-.37a10.08 10.08 0 1 1 18.8-5.1c0 5.56-4.53 10.11-10.35 10.11Zm5.82-7.48c-.32-.16-1.89-.93-2.18-1.03-.29-.1-.5-.16-.71.16-.21.32-.81 1.03-.99 1.23-.18.2-.36.23-.67.08-.32-.16-1.33-.49-2.53-1.55-.94-.83-1.56-1.84-1.75-2.15-.19-.31-.02-.49.15-.64.15-.15.33-.36.48-.54.16-.19.22-.31.33-.52.11-.21.05-.39-.02-.55-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.54-.7-.55-.18-.01-.4-.01-.61-.01-.21 0-.55.08-.84.4-.29.32-1.11 1.1-1.11 2.67 0 1.57 1.13 3.08 1.29 3.28.16.21 2.23 3.35 5.4 4.7.76.32 1.35.5 1.81.64.76.24 1.45.21 2 .13.61-.09 1.87-.75 2.14-1.52.27-.75.27-1.38.19-1.52-.08-.13-.29-.21-.62-.36Z"/>
     </svg>
@@ -681,5 +578,4 @@
 @endif
 
 </body>
-
 </html>
