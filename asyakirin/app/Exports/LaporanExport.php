@@ -47,6 +47,7 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
                             $label = 'Zakat Maal';
                             break;
                         case 'infaq – shodaqoh':
+                        case 'infaq-shodaqoh':
                         case 'infaq':
                         case 'shodaqoh':
                             $label = 'Infaq Shodaqoh';
@@ -240,6 +241,7 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
             case 'zakat maal':
                 return 'Zakat Maal';
             case 'infaq – shodaqoh':
+            case 'infaq-shodaqoh':
             case 'infaq':
             case 'shodaqoh':
                 return 'Infaq Shodaqoh';
