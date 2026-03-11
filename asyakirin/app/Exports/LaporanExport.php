@@ -107,6 +107,20 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
 
                 $rowData[] = $row->total_uang;
                 $rowData[] = $row->total_beras;
+                
+                // Metode Pembayaran
+                $metode = $row->bank ?? '-';
+                if (strtolower($metode) === 'qris') {
+                    $metode = 'QRIS';
+                } elseif (strtolower($metode) === 'cash') {
+                    $metode = 'Cash';
+                } elseif (strtolower($metode) === 'bsi' || strtolower($metode) === 'mandiri' || strtolower($metode) === 'bca' || strtolower($metode) === 'bni' || strtolower($metode) === 'bri' || strtolower($metode) === 'muamalat') {
+                    $metode = 'TF';
+                } elseif (empty($metode) || $metode === '-') {
+                    $metode = '-';
+                }
+                $rowData[] = $metode;
+                
                 $rowData[] = $row->status;
                 $rowData[] = optional($row->tanggal)->format('d M Y') ?? ($row->tanggal ?? '');
                 $rowData[] = $row->creator->name ?? ($row->nama_amil ?? 'Donatur');
@@ -152,6 +166,21 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
 
             $rowData[] = $totalUang;
             $rowData[] = $totalBeras;
+            
+            // Metode Pembayaran - berdasarkan field bank
+            $metode = $row->bank ?? '-';
+            // Format: QRIS, Cash, atau Transfer (TF)
+            if (strtolower($metode) === 'qris') {
+                $metode = 'QRIS';
+            } elseif (strtolower($metode) === 'cash') {
+                $metode = 'Cash';
+            } elseif (strtolower($metode) === 'bsi' || strtolower($metode) === 'mandiri' || strtolower($metode) === 'bca' || strtolower($metode) === 'bni' || strtolower($metode) === 'bri' || strtolower($metode) === 'muamalat') {
+                $metode = 'TF';
+            } elseif (empty($metode) || $metode === '-') {
+                $metode = '-';
+            }
+            $rowData[] = $metode;
+            
             $rowData[] = $row->status;
             $rowData[] = optional($row->tanggal)->format('d M Y') ?? ($row->tanggal ?? '');
             $rowData[] = $row->creator->name ?? ($row->nama_amil ?? 'Donatur');
@@ -162,7 +191,7 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
         // Hitung jumlah kolom
         $baseColumns = 6; // nomor, nama, alamat, telpon, profesi, jumlah_jiwa
         $jenisColumns = count($this->jenisColumns) * 2; // uang & beras per jenis
-        $totalColumns = $baseColumns + $jenisColumns + 5; // + total_uang, total_beras, status, tanggal, input_by
+        $totalColumns = $baseColumns + $jenisColumns + 6; // + total_uang, total_beras, metode, status, tanggal, input_by
 
         // add blank spacer row
         if (!empty($rows)) {
@@ -242,6 +271,7 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
 
         $headings[] = 'Total Uang (Rp)';
         $headings[] = 'Total Beras (Kg)';
+        $headings[] = 'Metode Pembayaran';
         $headings[] = 'Status';
         $headings[] = 'Tanggal';
         $headings[] = 'Diinput Oleh';
@@ -290,7 +320,7 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
         }
 
         $sheet->getColumnDimension($col)->setWidth(15); $col++;
-        $sheet->getColumnDimension($col)->setWidth(15); $col++;
+        $sheet->getColumnDimension($col)->setWidth(18); $col++; // Metode Pembayaran
         $sheet->getColumnDimension($col)->setWidth(10); $col++;
         $sheet->getColumnDimension($col)->setWidth(12); $col++;
         $sheet->getColumnDimension($col)->setWidth(15);

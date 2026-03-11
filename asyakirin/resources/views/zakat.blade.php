@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk Zakat - ASY-SYAAKIRIIN</title>
+    <link rel="icon" type="image/png" href="{{ asset('icons/logomasjid.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -215,8 +216,22 @@
 
             <!-- SCRIPT ZAKAT -->
             <script>
-                // nilai default per jiwa diambil dari konfigurasi
-                const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 52000)}};
+                // nilai default per jiwa - dikosongkan agar user mengisi sendiri
+                const DEFAULT_FITRAH_RATE = 0;
+
+                function formatRupiah(input) {
+                    // Format angka ke format Indonesia (dengan titik sebagai ribuan)
+                    let value = input.value.replace(/[^0-9]/g, '');
+                    if (value) {
+                        input.value = new Intl.NumberFormat('id-ID').format(parseInt(value));
+                    }
+                }
+
+                function parseRupiah(str) {
+                    // Parse angka dari format Indonesia (hapus titik)
+                    if (!str) return 0;
+                    return parseInt(str.toString().replace(/[^0-9]/g, '')) || 0;
+                }
 
                 function updateTable() {
 
@@ -227,7 +242,7 @@
 
                         let existingRow = document.getElementById('row-' + cb.value);
 
-                        // Jika dicentang & belum ada row → tambahkan
+                        // Jika dicentang & belum ada row -> tambahkan
                         if (cb.checked && !existingRow) {
 
                             let rowCount = tbody.children.length + 1;
@@ -245,7 +260,7 @@
                                     </td>
                                     <td class="border p-2">
                                         <div class="flex flex-col">
-                                            <input type="number" name="fitrah_rate[]" class="fitrah-rate w-full p-1 border rounded" placeholder="Rp per jiwa" value="${DEFAULT_FITRAH_RATE}" oninput="updateFitrah()">
+                                            <input type="text" name="fitrah_rate[]" class="fitrah-rate w-full p-1 border rounded" placeholder="Contoh: 52.000" value="" oninput="formatRupiah(this); updateFitrah()">
                                             <span class="text-sm text-gray-500 mt-1">Total: Rp <span class="fitrah-total">0</span></span>
                                             <input type="hidden" name="uang[]" class="uang">
                                         </div>
@@ -263,7 +278,7 @@
                                         <input type="hidden" name="jenis[]" value="${cb.value}">
                                     </td>
                                     <td class="border p-2">
-                                        <input type="number" name="uang[]" class="uang w-full p-1 border rounded" oninput="hitungTotal()">
+                                        <input type="text" name="uang[]" class="uang w-full p-1 border rounded" placeholder="Contoh: 100.000" oninput="formatRupiah(this); hitungTotal()">
                                     </td>
                                     <td class="border p-2">
                                         <input type="number" name="beras[]" class="beras w-full p-1 border rounded" oninput="hitungTotal()">
@@ -278,7 +293,7 @@
                             }
                         }
 
-                        // Jika tidak dicentang & ada row → hapus
+                        // Jika tidak dicentang & ada row -> hapus
                         if (!cb.checked && existingRow) {
                             existingRow.remove();
                         }
@@ -286,7 +301,7 @@
 
                     updateRowNumber();
                     hitungTotal();
-                    }
+                }
 
                 function updateRowNumber() {
                     let rows = document.querySelectorAll('#tableBody tr');
@@ -295,38 +310,51 @@
                     });
                 }
 
-
                 function hitungTotal() {
 
                     let totalUang = 0;
                     let totalBeras = 0;
 
                     document.querySelectorAll('.uang').forEach(input => {
-                        totalUang += parseInt(input.value) || 0;
+                        totalUang += parseRupiah(input.value);
                     });
 
                     document.querySelectorAll('.beras').forEach(input => {
                         totalBeras += parseInt(input.value) || 0;
                     });
 
-                    // Total di table
-                    document.getElementById('totalUang').innerText =
-                        new Intl.NumberFormat('id-ID').format(totalUang);
+                    // Total di table - format ribuan
+                    document.getElementById('totalUang').innerText = new Intl.NumberFormat('id-ID').format(totalUang);
 
                     document.getElementById('totalBeras').innerText = totalBeras;
 
-                    // 🔥 Total bawah (sinkron)
-                    document.getElementById('total').innerText =
-                        new Intl.NumberFormat('id-ID').format(totalUang);
+                    // Total bawah (sinkron) - format ribuan
+                    document.getElementById('total').innerText = new Intl.NumberFormat('id-ID').format(totalUang);
 
                     // Terbilang
                     document.getElementById('terbilang').innerText =
                         totalUang > 0
-                            ? terbilang(totalUang).replace(/\s+/g,' ').trim() + " rupiah"
+                            ? tebalang(totalUang).replace(/\s+/g,' ').trim() + " rupiah"
                             : "";
-                    }
+                }
 
-                function terbilang(n) {
+                function updateFitrah() {
+                    let jumlah = parseInt(jumlahJiwaInput.value) || 0;
+                    let fitrahRow = document.getElementById('row-Zakat Fitrah');
+                    if (fitrahRow) {
+                        let rateInput = fitrahRow.querySelector('.fitrah-rate');
+                        let totalSpan = fitrahRow.querySelector('.fitrah-total');
+                        let uangInput = fitrahRow.querySelector('input[name="uang[]"]');
+                        // Parse rate - support format Indonesia (dengan titik)
+                        let rate = parseRupiah(rateInput.value);
+                        let total = rate * jumlah;
+                        totalSpan.innerText = new Intl.NumberFormat('id-ID').format(total);
+                        uangInput.value = total;
+                    }
+                    hitungTotal();
+                }
+
+                function tebalang(n) {
                     n = Math.floor(n);
                     let angka = [
                         "", "satu", "dua", "tiga", "empat", "lima",
@@ -338,71 +366,41 @@
                         return angka[n];
 
                     else if (n < 20)
-                        return terbilang(n - 10) + " belas";
+                        return tebalang(n - 10) + " belas";
 
                     else if (n < 100)
-                        return terbilang(Math.floor(n / 10)) + " puluh " + terbilang(n % 10);
+                        return tebalang(Math.floor(n / 10)) + " puluh " + tebalang(n % 10);
 
                     else if (n < 200)
-                        return "seratus " + terbilang(n - 100);
+                        return "seratus " + tebalang(n - 100);
 
                     else if (n < 1000)
-                        return terbilang(Math.floor(n / 100)) + " ratus " + terbilang(n % 100);
+                        return tebalang(Math.floor(n / 100)) + " ratus " + tebalang(n % 100);
 
                     else if (n < 2000)
-                        return "seribu " + terbilang(n - 1000);
+                        return "seribu " + tebalang(n - 1000);
 
                     else if (n < 1000000)
-                        return terbilang(Math.floor(n / 1000)) + " ribu " + terbilang(n % 1000);
+                        return tebalang(Math.floor(n / 1000)) + " ribu " + tebalang(n % 1000);
 
                     else if (n < 1000000000)
-                        return terbilang(Math.floor(n / 1000000)) + " juta " + terbilang(n % 1000000);
+                        return tebalang(Math.floor(n / 1000000)) + " juta " + tebalang(n % 1000000);
 
                     else if (n < 1000000000000)
-                        return terbilang(Math.floor(n / 1000000000)) + " milyar " + terbilang(n % 1000000000);
+                        return tebalang(Math.floor(n / 1000000000)) + " milyar " + tebalang(n % 1000000000);
 
                     else if (n < 1000000000000000)
-                        return terbilang(Math.floor(n / 1000000000000)) + " triliun " + terbilang(n % 1000000000000);
+                        return tebalang(Math.floor(n / 1000000000000)) + " triliun " + tebalang(n % 1000000000000);
 
                     else
                         return "";
-                    }
+                }
             </script>
 
             <!-- METODE PEMBAYARAN -->
             <h2 class="text-xl font-semibold mb-4">Metode Pembayaran</h2>
 
             <div class="space-y-3 mb-6">
-
-                <!-- BNI -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/bni.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Negara Indonesia</span>
-                    </div>
-                    <input type="radio" name="bank" value="BNI"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
-                <!-- BCA -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/bca.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Central Asia</span>
-                    </div>
-                    <input type="radio" name="bank" value="BCA"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
-                <!-- Mandiri -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/mandiri.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Mandiri</span>
-                    </div>
-                    <input type="radio" name="bank" value="Mandiri"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
 
                 <!-- BSI -->
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
@@ -419,26 +417,6 @@
                     <div class="text-lg font-bold text-green-700 tracking-wider">450.450.4560</div>
                     <div class="text-sm text-gray-700 mt-1">an : YPDI ASY-SYAAKIRIIN PONDOK BAMBU</div>
                 </div>
-
-                <!-- Muamalat -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/muamalat.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Muamalat</span>
-                    </div>
-                    <input type="radio" name="bank" value="Muamalat"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
-
-                <!-- BRI -->
-                {{-- <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('icons/bri.png') }}" class="w-10 h-10 object-contain">
-                        <span class="font-medium">Bank Rakyat Indonesia</span>
-                    </div>
-                    <input type="radio" name="bank" value="BRI"
-                        class="w-5 h-5 accent-green-600">
-                </label> --}}
 
                 <!-- QRIS -->
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
@@ -467,7 +445,6 @@
                 @if(auth('web')->check() || auth('admin')->check())
                 <label class="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-green-50 transition">
                     <div class="flex items-center gap-4">
-                        {{-- <img src="{{ asset('icons/cash.png') }}" class="w-10 h-10 object-contain"> --}}
                         <span class="font-medium">Cash</span>
                     </div>
                     <input type="radio" name="bank" value="Cash"
@@ -499,7 +476,7 @@
                             "Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"
                         </p>
                         <p class="mt-2 text-sm text-gray-700">
-                            Saya niat mengeluarkan zakat harta karena Allah Ta’ala.
+                            Saya niat mengeluarkan zakat harta karena Allah Ta'ala.
                         </p>
                     </div>
 
@@ -513,7 +490,7 @@
                             "Nawaitu an ukhrija zakata al-fithri 'an nafsii fardhan lillahi ta'ala"
                         </p>
                         <p class="mt-2 text-sm text-gray-700">
-                            Saya niat menunaikan zakat fitrah untuk diri saya karena Allah Ta’ala.
+                            Saya niat menunaikan zakat fitrah untuk diri saya karena Allah Ta'ala.
                         </p>
                     </div>
                 </div>
@@ -564,7 +541,7 @@
             return;
         }
 
-        // 🔥 kunci tombol
+        // kunci tombol
         button.disabled = true;
         button.innerText = "Memproses...";
 
@@ -615,21 +592,6 @@
     const jumlahJiwaInput = document.querySelector('[name="jumlah_jiwa"]');
     const wrapper = document.getElementById('atasNamaWrapper');
     const container = document.getElementById('atasNamaContainer');
-
-    function updateFitrah() {
-        let jumlah = parseInt(jumlahJiwaInput.value) || 0;
-        let fitrahRow = document.getElementById('row-Zakat Fitrah');
-        if (fitrahRow) {
-            let rateInput = fitrahRow.querySelector('.fitrah-rate');
-            let totalSpan = fitrahRow.querySelector('.fitrah-total');
-            let uangInput = fitrahRow.querySelector('input[name="uang[]"]');
-            let rate = parseInt(rateInput.value) || 0;
-            let total = rate * jumlah;
-            totalSpan.innerText = new Intl.NumberFormat('id-ID').format(total);
-            uangInput.value = total;
-        }
-        hitungTotal();
-    }
 
     jumlahJiwaInput.addEventListener('input', function () {
 
