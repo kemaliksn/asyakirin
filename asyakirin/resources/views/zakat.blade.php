@@ -19,7 +19,7 @@
                 <div class="mt-1 text-gray-700 leading-snug">
                     <p class="text-xs md:text-sm">Alamat: <span class="font-medium">Jln. Gading Raya, RT. 008, RW. 008, Kel. Pondok Bambu, Kec. Duren Sawit, Jakarta Timur</span></p>
                     <p class="text-xs md:text-sm">Kontak: <span class="font-medium">WA 0851 1156 2500</span> · Email <span class="font-medium">ypdiaspb@gmail.com</span></p>
-                    <p class="text-xs md:text-sm">Website: <a href="#" class="text-green-700 hover:underline font-medium">https://asy-syaakiriin.com</a></p>
+                    <p class="text-xs md:text-sm">Website: <a href="https://asy-syaakiriin.com" class="text-green-700 hover:underline font-medium">https://asy-syaakiriin.com</a></p>
                 </div>
             </div>
         </div>
