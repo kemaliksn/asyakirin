@@ -91,13 +91,19 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
                 $itemValues[$jenis] = ['uang' => 0, 'beras' => 0];
             }
 
+            // Format nomor telepon agar tidak rusak di Excel (tangani +62)
+            $telpon = $row->telpon;
+            if (!empty($telpon) && (str_starts_with($telpon, '+62') || str_starts_with($telpon, '62'))) {
+                $telpon = " " . $telpon; // Tambahkan apostrophe agar Excel baca sebagai teks
+            }
+
             // Jika tidak ada items
             if (empty($items)) {
                 $rowData = [
                     $row->nomor,
                     $row->nama,
                     $row->alamat,
-                    $row->telpon,
+                    $telpon,
                     $row->profesi,
                     $row->jumlah_jiwa,
                 ];
@@ -152,7 +158,7 @@ class LaporanExport implements FromArray, WithHeadings, WithStyles
                 $row->nomor,
                 $row->nama,
                 $row->alamat,
-                $row->telpon,
+                $telpon,
                 $row->profesi,
                 $row->jumlah_jiwa,
             ];
