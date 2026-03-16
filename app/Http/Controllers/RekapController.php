@@ -8,6 +8,8 @@ use Carbon\Carbon;
 
 class RekapController extends Controller
 {
+    private array $onlineBanks = ['qris', 'tf', 'transfer', 'bsi', 'mandiri', 'bca', 'bni', 'bri', 'muamalat'];
+
     public function index(Request $request)
     {
         $bulanIni = Carbon::now()->month;
@@ -19,6 +21,7 @@ class RekapController extends Controller
         $filterBulan   = $request->get('bulan', $bulanIni);
         $filterTahun   = $request->get('tahun', $tahunIni);
         $filterNama    = $request->get('nama', '');
+        $filterMetode  = strtolower((string) $request->get('metode', ''));
 
         // ── Stat cards per jenis (bulan ini, lunas) ──
         $semuaBulanIni = ZakatPenerimaan::whereMonth('tanggal', $filterBulan)
@@ -62,6 +65,13 @@ class RekapController extends Controller
 
         if ($filterNama) {
             $query->where('nama', 'like', '%' . $filterNama . '%');
+        }
+
+        if ($filterMetode === 'cash') {
+            $query->whereRaw('LOWER(COALESCE(bank, "")) = ?', ['cash']);
+        } elseif ($filterMetode === 'online') {
+            $placeholders = implode(',', array_fill(0, count($this->onlineBanks), '?'));
+            $query->whereRaw("LOWER(COALESCE(bank, '')) IN ({$placeholders})", $this->onlineBanks);
         }
 
         // Ambil semua, lalu flatten items jadi per-baris per jenis
@@ -130,6 +140,7 @@ class RekapController extends Controller
             'filterBulan',
             'filterTahun',
             'filterNama',
+            'filterMetode',
             'daftarBulan',
         ));
     }

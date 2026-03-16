@@ -27,7 +27,7 @@
         .page-subtitle { font-size: 13px; color: #888; margin-bottom: 22px; }
         .filter-card { background: #fff; border: 1px solid #e2ece6; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
         .filter-title { font-size: 14px; font-weight: 700; color: #1a6b3c; margin-bottom: 16px; }
-        .filter-group { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: flex-end; }
+        .filter-group { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 12px; align-items: flex-end; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-label { font-size: 12px; font-weight: 600; color: #333; }
         .form-input, .form-select { border: 1px solid #d3e8da; border-radius: 8px; padding: 10px 12px; font-size: 13px; background: #f8fdf9; color: #333; outline: none; font-family: inherit; }
@@ -105,7 +105,7 @@
     <div class="filter-card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div class="filter-title">🔍 Filter Data</div>
-            @if(request('tanggal') || request('nama_kasir'))
+            @if(request('tanggal') || request('nama_kasir') || request('metode'))
             <a href="{{ route('admin.laporan') }}" class="btn-reset">Reset Filter</a>
             @endif
         </div>
@@ -129,11 +129,20 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Metode Pembayaran</label>
+                    <select name="metode" class="form-select">
+                        <option value="">-- Semua Metode --</option>
+                        <option value="cash" {{ request('metode', '') === 'cash' ? 'selected' : '' }}>Cash</option>
+                        <option value="online" {{ request('metode', '') === 'online' ? 'selected' : '' }}>Online (QRIS/TF)</option>
+                    </select>
+                </div>
+
                 <div></div>
 
                 <div style="display:flex;gap:8px;">
                     <button type="submit" class="btn-filter">🔍 Terapkan Filter</button>
-                    <a href="{{ route('admin.laporan') }}?export=excel{{ request('tanggal') ? '&tanggal=' . request('tanggal') : '' }}{{ request('nama_kasir') ? '&nama_kasir=' . request('nama_kasir') : '' }}" class="btn-export">
+                    <a href="{{ route('admin.laporan') }}?export=excel{{ request('tanggal') ? '&tanggal=' . request('tanggal') : '' }}{{ request('nama_kasir') ? '&nama_kasir=' . request('nama_kasir') : '' }}{{ request('metode') ? '&metode=' . request('metode') : '' }}" class="btn-export">
                         📥 Export Excel
                     </a>
                 </div>
@@ -153,6 +162,7 @@
                         <th>Jenis Zakat</th>
                         <th>Total Uang (Rp)</th>
                         <th>Total Beras (Kg)</th>
+                        <th>Metode</th>
                         <th>Status</th>
                         <th>Tanggal</th>
                         <th>Diinput Oleh</th>
@@ -167,6 +177,7 @@
                         <td>{{ $row->jenis ?: '-' }}</td>
                         <td style="text-align:right;">{{ number_format($row->total_uang, 0, ',', '.') }}</td>
                         <td style="text-align:right;">{{ number_format($row->total_beras, 1, ',', '.') }}</td>
+                        <td>{{ $row->metode ?? '-' }}</td>
                         <td>
                             <span style="
                                 display:inline-block;
@@ -188,7 +199,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="empty-state">
+                        <td colspan="10" class="empty-state">
                             📭 Tidak ada data yang sesuai dengan filter
                         </td>
                     </tr>

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ZakatPenerimaan;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
@@ -16,6 +15,7 @@ class AdminDashboardController extends Controller
         $bulanIni   = $now->month;
         $tahunIni   = $now->year;
         $tahun2digit = $now->format('y'); // "26"
+        $onlineBanks = ['qris', 'tf', 'transfer', 'bsi', 'mandiri', 'bca', 'bni', 'bri', 'muamalat'];
 
         // ── 1. STAT CARDS ──────────────────────────────────────────
 
@@ -45,6 +45,20 @@ class AdminDashboardController extends Controller
             ->whereYear('tanggal', $tahunIni)
             ->where('status', 'Lunas')
             ->sum('jumlah_jiwa');
+
+        // Pendapatan bulan ini dipisah metode pembayaran
+        $onlinePlaceholders = implode(',', array_fill(0, count($onlineBanks), '?'));
+        $totalOnlineBulanIni = ZakatPenerimaan::whereMonth('tanggal', $bulanIni)
+            ->whereYear('tanggal', $tahunIni)
+            ->where('status', 'Lunas')
+            ->whereRaw("LOWER(COALESCE(bank, '')) IN ({$onlinePlaceholders})", $onlineBanks)
+            ->sum('total_uang');
+
+        $totalCashBulanIni = ZakatPenerimaan::whereMonth('tanggal', $bulanIni)
+            ->whereYear('tanggal', $tahunIni)
+            ->where('status', 'Lunas')
+            ->whereRaw('LOWER(COALESCE(bank, "")) = ?', ['cash'])
+            ->sum('total_uang');
 
 
         // ── 2. TRANSAKSI TERBARU (5 data terakhir) ─────────────────
@@ -137,6 +151,8 @@ class AdminDashboardController extends Controller
             'totalPengumpulan',
             'totalDonatur',
             'totalJiwa',
+            'totalOnlineBulanIni',
+            'totalCashBulanIni',
             'transaksi',
             'statJenis',
             'chartBulanan',

@@ -10,6 +10,8 @@ use Carbon\Carbon;
 
 class LaporanController extends Controller
 {
+    private array $onlineBanks = ['qris', 'tf', 'transfer', 'bsi', 'mandiri', 'bca', 'bni', 'bri', 'muamalat'];
+
     public function exportSaya(Request $request)
     {
         // Dapatkan user saat ini dari salah satu guard
@@ -23,6 +25,7 @@ class LaporanController extends Controller
         $status = $request->get('status');
         $jenis  = $request->get('jenis'); // optional filter by jenis substring
         $nama   = $request->get('nama');  // optional filter by donor name substring
+        $metode = strtolower((string) $request->get('metode', ''));
 
         // Query transaksi milik user ini (created_by)
         $query = ZakatPenerimaan::with('creator')
@@ -35,6 +38,12 @@ class LaporanController extends Controller
         }
         if ($nama) {
             $query->where('nama', 'like', "%{$nama}%");
+        }
+        if ($metode === 'cash') {
+            $query->whereRaw('LOWER(COALESCE(bank, "")) = ?', ['cash']);
+        } elseif ($metode === 'online') {
+            $placeholders = implode(',', array_fill(0, count($this->onlineBanks), '?'));
+            $query->whereRaw("LOWER(COALESCE(bank, '')) IN ({$placeholders})", $this->onlineBanks);
         }
 
         $data = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->get();
@@ -62,6 +71,7 @@ class LaporanController extends Controller
     {
         $tanggal = $request->get('tanggal');
         $namaKasir = $request->get('nama_kasir');
+        $metode = strtolower((string) $request->get('metode', ''));
 
         // Build query
         $query = ZakatPenerimaan::with('creator');
@@ -71,9 +81,18 @@ class LaporanController extends Controller
         }
 
         if ($namaKasir) {
-            $query->whereHas('creator', function ($q) use ($namaKasir) {
-                $q->where('name', 'like', "%{$namaKasir}%");
-            })->orWhere('nama_amil', 'like', "%{$namaKasir}%");
+            $query->where(function ($q) use ($namaKasir) {
+                $q->whereHas('creator', function ($sub) use ($namaKasir) {
+                    $sub->where('name', 'like', "%{$namaKasir}%");
+                })->orWhere('nama_amil', 'like', "%{$namaKasir}%");
+            });
+        }
+
+        if ($metode === 'cash') {
+            $query->whereRaw('LOWER(COALESCE(bank, "")) = ?', ['cash']);
+        } elseif ($metode === 'online') {
+            $placeholders = implode(',', array_fill(0, count($this->onlineBanks), '?'));
+            $query->whereRaw("LOWER(COALESCE(bank, '')) IN ({$placeholders})", $this->onlineBanks);
         }
 
         $data = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->get();
@@ -105,6 +124,7 @@ class LaporanController extends Controller
                 'jenis'      => $jenisLabel,
                 'total_uang' => $row->total_uang,
                 'total_beras' => $row->total_beras,
+                'metode'     => $this->formatMetodePembayaran($row->bank),
                 'status'     => $row->status,
                 'tanggal'    => Carbon::parse($row->tanggal)->translatedFormat('d M Y'),
                 'input_by'   => $inputBy,
@@ -125,6 +145,25 @@ class LaporanController extends Controller
             ->sort()
             ->values();
 
-        return view('admin.laporan', compact('transaksi', 'tanggal', 'namaKasir', 'daftarKasir'));
+        return view('admin.laporan', compact('transaksi', 'tanggal', 'namaKasir', 'metode', 'daftarKasir'));
+    }
+
+    private function formatMetodePembayaran(?string $bank): string
+    {
+        $value = strtolower(trim((string) $bank));
+
+        if ($value === 'cash') {
+            return 'Cash';
+        }
+
+        if ($value === 'qris') {
+            return 'QRIS';
+        }
+
+        if (in_array($value, $this->onlineBanks, true)) {
+            return $value === 'qris' ? 'QRIS' : 'TF';
+        }
+
+        return '-';
     }
 }

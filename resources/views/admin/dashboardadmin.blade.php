@@ -219,13 +219,29 @@
             <div class="stat-value">{{ $totalDonatur }} Orang</div>
             <div class="stat-sub">Donatur unik tahun {{ now()->year }}</div>
         </div>
-        <div class="stat-card" style="grid-column: span 2;">
+        <div class="stat-card">
             <div class="stat-icon orange">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             </div>
             <div class="stat-label">Total Jiwa Membayar Zakat (Bulan Ini)</div>
             <div class="stat-value">{{ number_format($totalJiwa, 0, ',', '.') }} Jiwa</div>
             <div class="stat-sub">Bulan {{ now()->translatedFormat('F Y') }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon teal">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 9V7a5 5 0 00-10 0v2"/><rect x="5" y="9" width="14" height="10" rx="2"/><path d="M12 13v2"/></svg>
+            </div>
+            <div class="stat-label">Pendapatan Online (Bulan Ini)</div>
+            <div class="stat-value">Rp {{ number_format($totalOnlineBulanIni, 0, ',', '.') }}</div>
+            <div class="stat-sub">QRIS + Transfer</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 11h18"/><path d="M7 7h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z"/><path d="M8 15h3"/></svg>
+            </div>
+            <div class="stat-label">Pendapatan Cash (Bulan Ini)</div>
+            <div class="stat-value">Rp {{ number_format($totalCashBulanIni, 0, ',', '.') }}</div>
+            <div class="stat-sub">Pembayaran tunai</div>
         </div>
     </div>
 

@@ -306,6 +306,13 @@
                 <option value="Batal"       {{ $filterStatus === 'Batal'       ? 'selected' : '' }}>Batal</option>
             </select>
 
+            <!-- Metode Pembayaran -->
+            <select name="metode" class="filter-select">
+                <option value="">Semua Metode</option>
+                <option value="cash" {{ $filterMetode === 'cash' ? 'selected' : '' }}>Cash</option>
+                <option value="online" {{ $filterMetode === 'online' ? 'selected' : '' }}>Online (QRIS/TF)</option>
+            </select>
+
             <!-- Tombol Filter -->
             <button type="submit" class="btn-filter">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;margin-right:4px;"><path d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
@@ -324,7 +331,7 @@
                 Search
             </button>
 
-            @if($filterJenis || $filterStatus || $filterNama)
+            @if($filterJenis || $filterStatus || $filterNama || $filterMetode)
             <a href="{{ route('admin.rekap') }}" class="btn-reset">✕ Reset</a>
             @endif
 
@@ -352,8 +359,9 @@
                 $statusQ = request()->get('status');
                 $jenisQ  = request()->get('jenis');
                 $namaQ   = request()->get('nama');
+                $metodeQ = request()->get('metode');
             @endphp
-            <a href="{{ route('admin.laporan.export-saya', ['bulan' => $bulanQ, 'tahun' => $tahunQ, 'status' => $statusQ, 'jenis' => $jenisQ, 'nama' => $namaQ]) }}" class="btn-export" style="margin-left:8px;background:linear-gradient(135deg,#145c33,#1a6b3c);">
+            <a href="{{ route('admin.laporan.export-saya', ['bulan' => $bulanQ, 'tahun' => $tahunQ, 'status' => $statusQ, 'jenis' => $jenisQ, 'nama' => $namaQ, 'metode' => $metodeQ]) }}" class="btn-export" style="margin-left:8px;background:linear-gradient(135deg,#145c33,#1a6b3c);">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Export Rekap Saya
             </a>
