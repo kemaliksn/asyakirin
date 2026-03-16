@@ -210,8 +210,15 @@
             <script>
                 const DEFAULT_FITRAH_RATE = {{ config('zakat.fitrah_rate', 52000)}};
 
-                function parseRupiah(val) {
-                    return parseInt(String(val).replace(/\./g, '').replace(/,/g, '')) || 0;
+function parseNumber(val) {
+                    // Support decimal: 1.2, 1,2 → 1.2
+                    let str = String(val).trim();
+                    // Replace comma with dot for decimal
+                    str = str.replace(/,/g, '.');
+                    // Remove anything that's not digit/dot/space
+                    str = str.replace(/[^0-9.]/g, '');
+                    // Parse as float, handle empty/null
+                    return parseFloat(str) || 0;
                 }
 
                 function updateTable() {
@@ -287,11 +294,11 @@
                     let totalBeras = 0;
 
                     document.querySelectorAll('.uang').forEach(input => {
-                        totalUang += parseRupiah(input.value);
+                        totalUang += parseNumber(input.value);
                     });
 
                     document.querySelectorAll('.beras').forEach(input => {
-                        totalBeras += parseRupiah(input.value);
+                        totalBeras += parseNumber(input.value);
                     });
 
                     document.getElementById('totalUang').innerText =
@@ -444,8 +451,9 @@
 <!-- SCRIPT VALIDATE -->
 <script>
     function validateForm(button) {
+        // Clean numeric inputs for submission (server handles float)
         document.querySelectorAll('.uang, .beras').forEach(input => {
-            input.value = String(input.value).replace(/\./g, '').replace(/,/g, '');
+            input.value = parseNumber(input.value).toString();
         });
 
         let errors = [];
@@ -508,7 +516,7 @@
             let rateInput = fitrahRow.querySelector('.fitrah-rate');
             let totalSpan = fitrahRow.querySelector('.fitrah-total');
             let uangInput = fitrahRow.querySelector('input[name="uang[]"]');
-            let rate  = parseRupiah(rateInput.value);
+                let rate  = parseNumber(rateInput.value);
             let total = rate * jumlah;
             totalSpan.innerText = new Intl.NumberFormat('id-ID').format(total);
             uangInput.value = total;
