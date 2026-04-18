@@ -1,0 +1,306 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Helpers\ZakatHelper;
+use App\Models\ZakatPenerimaan;
+use Illuminate\Support\Facades\DB;
+
+class ZakatController extends Controller
+{
+    /**
+     * Simpan data ke DB lalu generate PDF tanda terima.
+     * Route: POST /zakat/export-pdf
+     */
+
+    public function exportPdf(Request $request)
+    {
+        // validasi minimal: selalu periksa keberadaan field utama. Bukti hanya wajib
+        // untuk donatur yang mengisi sendiri (tidak login sebagai kasir/admin).
+        $rules = [
+            'nama'        => 'required|string|max:100',
+            'jumlah_jiwa' => 'required|integer|min:1',
+            'jenis'       => 'required|array|min:1',
+            'uang'        => 'array',
+            'beras'       => 'array',
+        ];
+
+        // optional payment method
+        $rules['bank'] = 'nullable|string|max:50';
+
+        if (auth('web')->check() || auth('admin')->check()) {
+            $rules['bukti'] = 'nullable|image|max:2048';
+        } else {
+            $rules['bukti'] = 'required|image|max:2048';
+        }
+
+        $request->validate($rules);
+
+        $items      = [];
+        $totalUang  = 0;
+        $totalBeras = 0;
+
+        if ($request->has('jenis')) {
+            foreach ($request->jenis as $key => $jenis) {
+                $uang  = (float) ($request->uang[$key]  ?? 0);
+                $beras = (float) ($request->beras[$key] ?? 0);
+
+                $items[] = [
+                    'jenis' => $jenis,
+                    'uang'  => $uang,
+                    'beras' => $beras,
+                ];
+
+                $totalUang  += $uang;
+                $totalBeras += $beras;
+            }
+        }
+
+        $terbilang = ZakatHelper::terbilang($totalUang);
+        $tahun     = date('y');
+
+        // apakah ada siapa pun login (kasir atau admin) agar status bisa otomatis Lunas
+        $isLogged = auth('web')->check() || auth('admin')->check();
+
+        // tangkap ID pengurus hanya dari guard web (kasir). admin tidak disimpan
+        $createdBy = auth('web')->check() ? auth('web')->id() : null;
+
+        // nama amil = nama user yang login (web atau admin) atau input manual
+        if (auth('web')->check()) {
+            $namaAmil = auth('web')->user()->name;
+        } elseif (auth('admin')->check()) {
+            $namaAmil = auth('admin')->user()->name;
+        } else {
+            $namaAmil = $request->nama_amil ?? '';
+        }
+
+
+        // 🔥 SIMPAN DULU DALAM TRANSACTION
+        // jika ada file bukti, simpan terlebih dahulu
+        $buktiPath = null;
+        if ($request->hasFile('bukti')) {
+            $buktiPath = $request->file('bukti')->store('bukti', 'public');
+        }
+
+        $zakat = DB::transaction(function () use (
+            $request,
+            $items,
+            $totalUang,
+            $totalBeras,
+            $terbilang,
+            $tahun,
+            $isLogged,
+            $createdBy,  // ← pass ke dalam closure
+            $buktiPath,
+            $namaAmil
+        ) {
+
+            // tanggal tetap untuk perhitungan & simpan
+            $today = now()->toDateString();
+
+            // nomor urut harian per kasir/petugas — prefer created_by jika ada; fallback ke nama_amil
+            $dailySeq = null;
+            if (!empty($createdBy)) {
+                $existingCount = ZakatPenerimaan::where('created_by', $createdBy)
+                    ->where('tanggal', $today)
+                    ->lockForUpdate()
+                    ->count();
+                $dailySeq = $existingCount + 1;
+            } else {
+                // Jika login via guard admin atau created_by tidak terisi, gunakan nama_amil sebagai identitas petugas
+                if (!empty($namaAmil)) {
+                    $existingCount = ZakatPenerimaan::where('nama_amil', $namaAmil)
+                        ->where('tanggal', $today)
+                        ->lockForUpdate()
+                        ->count();
+                    $dailySeq = $existingCount + 1;
+                }
+            }
+
+            $last = ZakatPenerimaan::where('tahun', $tahun)
+                ->orderBy('id', 'desc')
+                ->lockForUpdate()
+                ->first();
+
+            $nextNumber = 1;
+
+            if ($last) {
+                $lastNumber = (int) substr($last->nomor, -4);
+                $nextNumber = $lastNumber + 1;
+            }
+
+            $nomor = "ASY/$tahun/UPZ/" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+            return ZakatPenerimaan::create([
+                'nomor'          => $nomor,
+                'nama'           => $request->nama,
+                'alamat'         => $request->alamat,
+                'telpon'         => $request->telpon,
+                'profesi'        => $request->profesi,
+                'jumlah_jiwa'    => (int) $request->jumlah_jiwa,
+                'atas_nama'      => $request->atas_nama ?? [],
+                'items'          => $items,
+                'total_uang'     => (int) $totalUang,
+                'total_beras'    => $totalBeras,
+                'terbilang'      => $terbilang,
+                'nama_amil'      => $namaAmil,
+                'daily_sequence' => $dailySeq,
+                'tanggal'        => $today,
+                'tahun'          => $tahun,
+
+                // status otomatis berdasarkan login
+                'status'      => $isLogged ? 'Lunas' : 'Belum Lunas',
+
+                // ✅ Auto-detect: kalau ada user login = kasir, kalau tidak = donatur langsung
+                'created_by'  => $createdBy, // NULL kalau donatur langsung, ID kasir kalau login
+                'bukti'       => $buktiPath,
+                'bank'        => $request->bank ?? null,
+            ]);
+        });
+
+        // Generate PDF seperti biasa...
+        $data = [
+            'nomor'          => $zakat->nomor,
+            'nama'           => $zakat->nama,
+            'alamat'         => $zakat->alamat,
+            'telpon'         => $zakat->telpon,
+            'profesi'        => $zakat->profesi,
+            'jumlah_jiwa'    => $zakat->jumlah_jiwa,
+            'atas_nama'      => $zakat->atas_nama ?? [],
+            'items'          => $zakat->items ?? [],
+            'bank'           => $zakat->bank ?? null,
+            'terbilang'      => $zakat->terbilang,
+            'tanggal'        => now()->isoFormat('D MMMM Y'),
+            'nama_amil'      => $zakat->nama_amil,
+            'daily_sequence' => $zakat->daily_sequence,
+        ];
+        $pdf = Pdf::loadView('pdf.zakat', compact('data'))
+            ->setPaper('A5', 'landscape')
+            ->setOption([
+                'defaultFont'          => 'DejaVu Sans',
+                'isRemoteEnabled'      => true,
+                'isHtml5ParserEnabled' => true,
+                'dpi'                  => 150,
+                'margin_top'           => 0,
+                'margin_right'         => 0,
+                'margin_bottom'        => 0,
+                'margin_left'          => 0,
+            ]);
+
+        $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+
+        // Jika kasir/admin sedang login, arahkan ke halaman invoice-ready (tanpa langsung download)
+        if (auth('web')->check() || auth('admin')->check()) {
+            return redirect()->route('zakat.invoice-ready', $zakat->id);
+        }
+
+        // Publik (donatur) tetap langsung download
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Cetak ulang PDF dari data yang sudah tersimpan di DB.
+     * HANYA ADMIN yang boleh mengakses fitur ini.
+     * Route: GET /zakat/{id}/cetak
+     */
+    public function cetakUlang(int $id)
+    {
+        // Izinkan ADMIN dan KASIR mencetak ulang
+        $isAdmin = (auth('admin')->check() && auth('admin')->user()->role === 'admin')
+            || (auth('web')->check() && auth('web')->user()->role === 'admin');
+
+        $isKasir = (auth('admin')->check() && auth('admin')->user()->role === 'kasir')
+            || (auth('web')->check() && auth('web')->user()->role === 'kasir');
+
+        if (!($isAdmin || $isKasir)) {
+            abort(403, 'Akses ditolak. Hanya admin atau kasir yang dapat mencetak ulang invoice.');
+        }
+
+        $zakat = ZakatPenerimaan::findOrFail($id);
+
+        $data = [
+            'nomor'          => $zakat->nomor,
+            'nama'           => $zakat->nama,
+            'alamat'         => $zakat->alamat,
+            'telpon'         => $zakat->telpon,
+            'profesi'        => $zakat->profesi,
+            'jumlah_jiwa'    => $zakat->jumlah_jiwa,
+            'atas_nama'      => $zakat->atas_nama ?? [],
+            'items'          => $zakat->items     ?? [],
+            'bank'           => $zakat->bank ?? null,
+            'terbilang'      => $zakat->terbilang,
+            'tanggal'        => $zakat->tanggal->isoFormat('D MMMM Y'),
+            'nama_amil'      => $zakat->nama_amil,
+            'daily_sequence' => $zakat->daily_sequence,
+        ];
+
+        $pdf = Pdf::loadView('pdf.zakat', compact('data'))
+            ->setPaper('A5', 'landscape')
+            ->setOption([
+                'defaultFont'          => 'DejaVu Sans',
+                'isRemoteEnabled'      => true,
+                'isHtml5ParserEnabled' => true,
+                'dpi'                  => 150,
+                'margin_top'           => 0,
+                'margin_right'         => 0,
+                'margin_bottom'        => 0,
+                'margin_left'          => 0,
+            ]);
+
+        $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+        return $pdf->stream($filename);
+    }
+    
+     /**
+     * Cetak/unduh invoice publik tanpa login (untuk donatur via tautan WA)
+     * Route: GET /zakat/{id}/invoice
+     */
+    public function publicInvoice(int $id)
+    {
+        $zakat = ZakatPenerimaan::findOrFail($id);
+
+        $data = [
+            'nomor'          => $zakat->nomor,
+            'nama'           => $zakat->nama,
+            'alamat'         => $zakat->alamat,
+            'telpon'         => $zakat->telpon,
+            'profesi'        => $zakat->profesi,
+            'jumlah_jiwa'    => $zakat->jumlah_jiwa,
+            'atas_nama'      => $zakat->atas_nama ?? [],
+            'items'          => $zakat->items ?? [],
+            'bank'           => $zakat->bank ?? null,
+            'terbilang'      => $zakat->terbilang,
+            'tanggal'        => $zakat->tanggal->isoFormat('D MMMM Y'),
+            'nama_amil'      => $zakat->nama_amil,
+            'daily_sequence' => $zakat->daily_sequence,
+        ];
+
+        $pdf = Pdf::loadView('pdf.zakat', compact('data'))
+            ->setPaper('A5', 'landscape')
+            ->setOption([
+                'defaultFont'          => 'DejaVu Sans',
+                'isRemoteEnabled'      => true,
+                'isHtml5ParserEnabled' => true,
+                'dpi'                  => 150,
+                'margin_top'           => 0,
+                'margin_right'         => 0,
+                'margin_bottom'        => 0,
+                'margin_left'          => 0,
+            ]);
+
+        $filename = str_replace(['/', '\\'], '-', $zakat->nomor) . '.pdf';
+        return $pdf->stream($filename);
+    }
+
+    /**
+     * Halaman konfirmasi setelah simpan (untuk kasir/admin):
+     * berisi tombol Download Invoice & Kirim via WhatsApp
+     */
+    public function invoiceReady(int $id)
+    {
+        $zakat = ZakatPenerimaan::findOrFail($id);
+        return view('invoice-ready', compact('zakat'));
+    }
+}
