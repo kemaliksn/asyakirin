@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request; // ← tambahkan ini
 use App\Http\Controllers\ZakatController;
+use App\Http\Controllers\QurbanController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\RekapController;
@@ -74,6 +75,26 @@ Route::middleware('admin.auth')->group(function () {
     Route::get('/zakat/{id}/invoice-ready', [ZakatController::class, 'invoiceReady'])->name('zakat.invoice-ready');
 });
 
+// ══════════════════════════════════════════════
+//  PUBLIK — Form Qurban (tidak perlu login)
+// ══════════════════════════════════════════════
+
+// Form Qurban (publik + kasir + admin)
+Route::get('/qurban', function () {
+    return view('qurban');
+});
+
+// Export PDF dan cetak (hanya kasir dan admin, dari form publik atau admin)
+Route::post('/qurban/export-pdf', [QurbanController::class, 'exportPdf'])->name('qurban.export-pdf');
+// Cetak ulang internal (admin & kasir): butuh login
+Route::middleware('admin.auth')->get('/qurban/{id}/cetak', [QurbanController::class, 'cetakUlang'])->name('qurban.cetak-ulang');
+// Cetak publik (pembayar via WA): tanpa login
+Route::get('/qurban/{id}/invoice', [QurbanController::class, 'publicInvoice'])->name('qurban.public-invoice');
+// Halaman invoice-ready (hanya untuk yang login)
+Route::middleware('admin.auth')->group(function () {
+    Route::get('/qurban/{id}/invoice-ready', [QurbanController::class, 'invoiceReady'])->name('qurban.invoice-ready');
+});
+
 
 // ══════════════════════════════════════════════
 //  ADMIN — Login (tidak perlu middleware)
@@ -107,6 +128,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // update/delete actions will enforce admin/ kasir in controller itself
         Route::put('/transaksi/{id}', [\App\Http\Controllers\TransaksiController::class, 'update'])->name('transaksi.update');
         Route::delete('/transaksi/{id}', [\App\Http\Controllers\TransaksiController::class, 'destroy'])->name('transaksi.destroy');
+
+        // ── QURBAN routes (available to all authenticated roles)
+        Route::get('/qurban', [QurbanController::class, 'index'])->name('qurban');
+        Route::get('/qurban/{id}', [QurbanController::class, 'show'])->name('qurban.show');
+        Route::put('/qurban/{id}', [QurbanController::class, 'update'])->name('qurban.update');
+        Route::delete('/qurban/{id}', [QurbanController::class, 'destroy'])->name('qurban.destroy');
 
         // ── ADMIN routes (full access) ──
         Route::middleware([\App\Http\Middleware\AdminOnly::class])->group(function () {
