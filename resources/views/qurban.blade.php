@@ -61,37 +61,28 @@
         }
         
         .close-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.98);
-            border: 2px solid #22c55e;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: none;
+            border-radius: 0;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
+            font-size: 32px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #22c55e;
+            transition: all 0.2s;
+            color: #ffffff;
             font-weight: 300;
             line-height: 1;
             padding: 0;
             z-index: 100;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .close-btn:hover {
-            background: #22c55e;
-            color: white;
-            transform: scale(1.2) rotate(90deg);
-            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.45);
         }
         
         .close-btn:active {
-            transform: scale(0.95) rotate(90deg);
+            transform: scale(0.95);
         }
         
         @media (max-width: 1024px) {
@@ -109,7 +100,6 @@
             .flyer-container {
                 max-width: 94vw;
                 max-height: 85vh;
-                border-radius: 16px;
             }
             
             .flyer-image {
@@ -117,15 +107,11 @@
             }
             
             .close-btn {
-                top: 15px;
-                right: 15px;
-                width: 45px;
-                height: 45px;
-                font-size: 32px;
-            }
-            
-            .close-btn:hover {
-                transform: scale(1.15) rotate(90deg);
+                top: 8px;
+                right: 8px;
+                width: 40px;
+                height: 40px;
+                font-size: 28px;
             }
         }
         
@@ -133,7 +119,6 @@
             .flyer-container {
                 max-width: 96vw;
                 max-height: 82vh;
-                border-radius: 12px;
             }
             
             .flyer-image {
@@ -141,15 +126,11 @@
             }
             
             .close-btn {
-                top: 12px;
-                right: 12px;
-                width: 42px;
-                height: 42px;
-                font-size: 28px;
-            }
-            
-            .close-btn:hover {
-                transform: scale(1.1) rotate(90deg);
+                top: 6px;
+                right: 6px;
+                width: 38px;
+                height: 38px;
+                font-size: 26px;
             }
         }
     </style>
