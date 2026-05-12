@@ -190,6 +190,7 @@
                     <tr>
                         <th>No. Referensi</th>
                         <th>Nama Pembayar</th>
+                        <th>Jenis Qurban</th>
                         <th>Telpon</th>
                         <th>Tanggal</th>
                         <th>Total Uang</th>
@@ -202,6 +203,7 @@
                     <tr>
                         <td>{{ $qurban->nomor }}</td>
                         <td>{{ $qurban->nama }}</td>
+                        <td>{{ $qurban->jenis_label }}</td>
                         <td>{{ $qurban->telpon }}</td>
                         <td>{{ $qurban->tanggal?->format('d M Y') ?? '-' }}</td>
                         <td>Rp {{ number_format($qurban->total_uang, 0, ',', '.') }}</td>
