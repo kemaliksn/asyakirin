@@ -228,7 +228,7 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
         <div class="sign-city">Jakarta,&nbsp;<span class="sign-line">&nbsp;{{ $data['tanggal'] ?? '' }}</span></div>
         <div class="sign-amil">Amil / Penerima,</div>
         @php $seq = isset($data['daily_sequence']) && $data['daily_sequence'] ? str_pad($data['daily_sequence'], 2, '0', STR_PAD_LEFT) : null; @endphp
-        <div class="sign_box">({{ $data['nama_amil'] ?: 'admin qurban' }}) @if($seq) — #{{ $seq }} @endif</div>
+        <div class="sign_box">({{ $data['nama_amil'] ?: 'Admin Qurban' }}) @if($seq) — #{{ $seq }} @endif</div>
     </td>
 </tr>
 </table>
@@ -246,8 +246,8 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
         <div class="bsi-sub">BANK SYARIAH<br>INDONESIA</div>
     </td>
     <td class="f-rek">
-        <div><b>Rekening Qurban :</b> 450.450.4560</div>
-        <div><b>an :</b> YPDI ASY-SYAAKIRIIN PONDOK BAMBU</div>
+        <div><b>Rekening Qurban :</b> 650.650.6620</div>
+        <div><b>an :</b> YPDI Asy-Syaakiriin</div>
         <div style="font-weight:700;">Nomor Konfirmasi / Call Center : 0851-1156-2500 (Chat Only)</div>
     </td>
 </tr>

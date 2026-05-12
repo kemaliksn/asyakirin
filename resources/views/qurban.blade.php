@@ -439,8 +439,8 @@
                 </label>
                 <div id="bsi-detail" class="hidden border border-dashed rounded-lg p-3 md:p-4 bg-gray-50">
                     <p class="font-semibold mb-1 text-sm md:text-base">Rekening Qurban</p>
-                    <div class="text-base md:text-lg font-bold text-green-700 tracking-wider">450.450.4560</div>
-                    <div class="text-xs md:text-sm text-gray-700 mt-1">an : YPDI ASY-SYAAKIRIIN PONDOK BAMBU</div>
+                    <div class="text-base md:text-lg font-bold text-green-700 tracking-wider">650.650.6620</div>
+                    <div class="text-xs md:text-sm text-gray-700 mt-1">an : YPDI Asy-Syaakiriin</div>
                 </div>
 
                 <!-- QRIS -->
