@@ -220,12 +220,13 @@
                 <a href="{{ route('admin.qurban') }}" class="btn-back">← Kembali</a>
                 <button type="submit" class="btn-submit">💾 Simpan Perubahan</button>
                 <a href="{{ route('qurban.cetak-ulang', $qurban->id) }}" target="_blank" class="btn-print">🖨️ Cetak Invoice</a>
-                <form action="{{ route('admin.qurban.destroy', $qurban->id) }}" method="POST" style="display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-delete" onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️ Hapus</button>
-                </form>
             </div>
+        </form>
+
+        <form action="{{ route('admin.qurban.destroy', $qurban->id) }}" method="POST" style="display: inline; margin-top: 12px;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn-delete" onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️ Hapus</button>
         </form>
     </div>
 </div>
