@@ -321,7 +321,7 @@ class QurbanController extends Controller
 
         // Stats
         $totalRecord = QurbanPenerimaan::count();
-        $totalUang = QurbanPenerimaan::sum('total_uang');
+        $totalUang = QurbanPenerimaan::where('status', 'Lunas')->sum('total_uang');
         $lunas = QurbanPenerimaan::where('status', 'Lunas')->count();
         $belumLunas = QurbanPenerimaan::where('status', 'Belum Lunas')->count();
         $batal = QurbanPenerimaan::where('status', 'Batal')->count();
