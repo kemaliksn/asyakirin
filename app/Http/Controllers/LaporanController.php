@@ -60,20 +60,27 @@ class LaporanController extends Controller
 
     public function index(Request $request)
     {
-        $tanggal = $request->get('tanggal');
+        $dariTanggal = $request->get('dari_tanggal');
+        $sampaiTanggal = $request->get('sampai_tanggal');
         $namaKasir = $request->get('nama_kasir');
 
         // Build query
         $query = ZakatPenerimaan::with('creator');
 
-        if ($tanggal) {
-            $query->whereDate('tanggal', $tanggal);
+        if ($dariTanggal) {
+            $query->whereDate('tanggal', '>=', $dariTanggal);
+        }
+
+        if ($sampaiTanggal) {
+            $query->whereDate('tanggal', '<=', $sampaiTanggal);
         }
 
         if ($namaKasir) {
-            $query->whereHas('creator', function ($q) use ($namaKasir) {
-                $q->where('name', 'like', "%{$namaKasir}%");
-            })->orWhere('nama_amil', 'like', "%{$namaKasir}%");
+            $query->where(function ($q) use ($namaKasir) {
+                $q->whereHas('creator', function ($sub) use ($namaKasir) {
+                    $sub->where('name', 'like', "%{$namaKasir}%");
+                })->orWhere('nama_amil', 'like', "%{$namaKasir}%");
+            });
         }
 
         $data = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->get();
@@ -113,9 +120,9 @@ class LaporanController extends Controller
 
         // Jika request export ke Excel
         if ($request->get('export') === 'excel') {
-            $filename = 'Laporan_Zakat_' . ($tanggal ? str_replace('-', '_', $tanggal) : date('Y-m-d')) . '.xlsx';
+            $filename = 'Laporan_Zakat_' . now()->format('Ymd_His') . '.xlsx';
             // Kirim data model asli (mengandung items) agar export bisa pecah per-jenis
-            return Excel::download(new LaporanExport($data, $tanggal, $namaKasir), $filename);
+            return Excel::download(new LaporanExport($data, $dariTanggal ?: $sampaiTanggal, $namaKasir), $filename);
         }
 
         // Daftar kasir unik untuk dropdown filter
@@ -125,6 +132,6 @@ class LaporanController extends Controller
             ->sort()
             ->values();
 
-        return view('admin.laporan', compact('transaksi', 'tanggal', 'namaKasir', 'daftarKasir'));
+        return view('admin.laporan', compact('transaksi', 'dariTanggal', 'sampaiTanggal', 'namaKasir', 'daftarKasir'));
     }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\QurbanExport;
 use App\Helpers\ZakatHelper;
 use App\Models\QurbanPenerimaan;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class QurbanController extends Controller
 {
@@ -23,6 +25,9 @@ class QurbanController extends Controller
             'nama'        => 'required|string|max:100',
             'jenis'       => 'required|array|min:1',
             'uang'        => 'array',
+            'nama_jiwa'   => 'array|max:6',
+            'nama_jiwa.*' => 'nullable|string|max:100',
+            'catatan'     => 'nullable|string|max:500',
         ];
 
         // optional payment method
@@ -53,6 +58,10 @@ class QurbanController extends Controller
                 $totalUang  += $uang;
             }
         }
+
+        $namaJiwa = array_values(array_filter($request->input('nama_jiwa', []), function ($name) {
+            return trim((string) $name) !== '';
+        }));
 
         $terbilang = ZakatHelper::terbilang($totalUang);
         $tahun     = date('y');
@@ -89,7 +98,8 @@ class QurbanController extends Controller
             $isLogged,
             $createdBy,  // ← pass ke dalam closure
             $buktiPath,
-            $namaAmil
+            $namaAmil,
+            $namaJiwa
         ) {
 
             // tanggal tetap untuk perhitungan & simpan
@@ -114,19 +124,31 @@ class QurbanController extends Controller
                 }
             }
 
+            $jenisCollection = collect($request->input('jenis', []));
+            $nomorPrefix = 'LAINNYA';
+            if ($jenisCollection->contains(function ($item) {
+                return str_contains(strtolower($item), 'sapi');
+            })) {
+                $nomorPrefix = 'SAPI';
+            } elseif ($jenisCollection->contains(function ($item) {
+                return str_contains(strtolower($item), 'kambing');
+            })) {
+                $nomorPrefix = 'KAMBING';
+            }
+
             $last = QurbanPenerimaan::where('tahun', $tahun)
+                ->where('nomor', 'like', "ASY/$tahun/QRB/$nomorPrefix/%")
                 ->orderBy('id', 'desc')
                 ->lockForUpdate()
                 ->first();
 
             $nextNumber = 1;
-
             if ($last) {
                 $lastNumber = (int) substr($last->nomor, -4);
                 $nextNumber = $lastNumber + 1;
             }
 
-            $nomor = "ASY/$tahun/QRB/" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $nomor = "ASY/$tahun/QRB/$nomorPrefix/" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
             return QurbanPenerimaan::create([
                 'nomor'          => $nomor,
@@ -141,6 +163,8 @@ class QurbanController extends Controller
                 'daily_sequence' => $dailySeq,
                 'tanggal'        => $today,
                 'tahun'          => $tahun,
+                'nama_jiwa'      => $namaJiwa,
+                'catatan'        => trim((string) $request->catatan) ?: null,
 
                 // status otomatis berdasarkan login
                 'status'      => $isLogged ? 'Lunas' : 'Belum Lunas',
@@ -160,6 +184,8 @@ class QurbanController extends Controller
             'telpon'         => $qurban->telpon,
             'profesi'        => $qurban->profesi,
             'items'          => $qurban->items ?? [],
+            'nama_jiwa'      => $qurban->nama_jiwa ?? [],
+            'catatan'        => $qurban->catatan ?? null,
             'bank'           => $qurban->bank ?? null,
             'terbilang'      => $qurban->terbilang,
             'tanggal'        => now()->isoFormat('D MMMM Y'),
@@ -217,6 +243,8 @@ class QurbanController extends Controller
             'telpon'         => $qurban->telpon,
             'profesi'        => $qurban->profesi,
             'items'          => $qurban->items ?? [],
+            'nama_jiwa'      => $qurban->nama_jiwa ?? [],
+            'catatan'        => $qurban->catatan ?? null,
             'bank'           => $qurban->bank ?? null,
             'terbilang'      => $qurban->terbilang,
             'tanggal'        => $qurban->tanggal->isoFormat('D MMMM Y'),
@@ -256,6 +284,8 @@ class QurbanController extends Controller
             'telpon'         => $qurban->telpon,
             'profesi'        => $qurban->profesi,
             'items'          => $qurban->items ?? [],
+            'nama_jiwa'      => $qurban->nama_jiwa ?? [],
+            'catatan'        => $qurban->catatan ?? null,
             'bank'           => $qurban->bank ?? null,
             'terbilang'      => $qurban->terbilang,
             'tanggal'        => $qurban->tanggal->isoFormat('D MMMM Y'),
@@ -298,9 +328,13 @@ class QurbanController extends Controller
     {
         $query = QurbanPenerimaan::query();
 
-        // Filter by nama
-        if ($request->has('nama') && !empty($request->nama)) {
-            $query->where('nama', 'like', '%' . $request->nama . '%');
+        // Search by nama or nomor referensi
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('nomor', 'like', '%' . $search . '%');
+            });
         }
 
         // Filter by status
@@ -316,6 +350,13 @@ class QurbanController extends Controller
             $query->whereDate('tanggal', '<=', $request->sampai_tanggal);
         }
 
+        // Export Excel if requested
+        if ($request->get('export') === 'excel') {
+            $data = $query->with('creator')->orderBy('tanggal', 'desc')->get();
+            $filename = 'Data_Qurban_' . now()->format('Ymd_His') . '.xlsx';
+            return Excel::download(new QurbanExport($data), $filename);
+        }
+
         // Sort by tanggal descending
         $qurbans = $query->orderBy('tanggal', 'desc')->paginate(20);
 
@@ -325,6 +366,7 @@ class QurbanController extends Controller
         $lunas = QurbanPenerimaan::where('status', 'Lunas')->count();
         $belumLunas = QurbanPenerimaan::where('status', 'Belum Lunas')->count();
         $batal = QurbanPenerimaan::where('status', 'Batal')->count();
+        $deletedQurbans = QurbanPenerimaan::onlyTrashed()->orderBy('deleted_at', 'desc')->take(5)->get();
 
         return view('admin.qurban-list', compact(
             'qurbans',
@@ -332,7 +374,8 @@ class QurbanController extends Controller
             'totalUang',
             'lunas',
             'belumLunas',
-            'batal'
+            'batal',
+            'deletedQurbans'
         ));
     }
 

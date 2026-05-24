@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Models\Admin;
 
 class QurbanPenerimaan extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'qurban_penerimaans';
 
     protected $fillable = [
@@ -21,6 +24,8 @@ class QurbanPenerimaan extends Model
         'total_uang',
         'terbilang',
         'nama_amil',
+        'nama_jiwa',
+        'catatan',
         'daily_sequence',
         'tanggal',
         'status',
@@ -41,8 +46,9 @@ class QurbanPenerimaan extends Model
 
     // Otomatis decode JSON saat diakses
     protected $casts = [
-        'items'   => 'array',
-        'tanggal' => 'date',
+        'items'    => 'array',
+        'nama_jiwa' => 'array',
+        'tanggal'  => 'date',
     ];
 
     // ── Scope filter status ──

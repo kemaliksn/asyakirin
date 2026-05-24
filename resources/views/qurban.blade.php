@@ -240,10 +240,31 @@
                 </select>
             </div>
 
+            <div id="namaJiwaSection" class="mb-5 md:mb-6 hidden">
+                <h3 class="text-base md:text-lg font-semibold mb-3">Nama Jiwa (opsional)</h3>
+                <div class="grid sm:grid-cols-2 gap-3 md:gap-4">
+                    @for ($i = 1; $i <= 6; $i++)
+                        <input type="text" name="nama_jiwa[]" class="border p-3 rounded w-full text-sm md:text-base min-h-[48px]" placeholder="Nama Jiwa {{ $i }}">
+                    @endfor
+                </div>
+            </div>
+
+            <div class="mb-5 md:mb-6">
+                <label class="block mb-2 font-medium text-sm md:text-base">Catatan / Keterangan Tambahan</label>
+                <textarea name="catatan" rows="3" class="border p-3 rounded w-full text-sm md:text-base" placeholder="Catatan, permintaan khusus, atau informasi tambahan"></textarea>
+            </div>
+
             <!-- JENIS PEMBAYARAN QURBAN -->
             <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4">Pilih Jenis Pembayaran Qurban</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 mb-6 md:mb-8">
+                <label class="flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer hover:bg-green-50 active:bg-green-100 transition">
+                    <input type="checkbox" value="Sapi 1 Ekor" data-harga="37000000" data-keterangan="330 - 350kg Sapi Bali" onchange="updateTable()" class="w-5 h-5 accent-green-600 qurban flex-shrink-0">
+                    <div class="flex-1">
+                        <span class="text-sm md:text-base font-medium block">Sapi 1 Ekor</span>
+                        <span class="text-xs text-gray-600">Rp 37.000.000 (330-350kg Sapi Bali)</span>
+                    </div>
+                </label>
                 <label class="flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer hover:bg-green-50 active:bg-green-100 transition">
                     <input type="checkbox" value="Sapi 1/7" data-harga="3700000" data-keterangan="330 - 350kg Sapi Bali" onchange="updateTable()" class="w-5 h-5 accent-green-600 qurban flex-shrink-0">
                     <div class="flex-1">
@@ -374,6 +395,7 @@
 
                     updateRowNumber();
                     hitungTotal();
+                    toggleNamaJiwaSection();
                 }
 
                 function updateRowNumber() {
@@ -381,6 +403,19 @@
                     rows.forEach((row, index) => {
                         row.querySelector('.row-no').innerText = index + 1;
                     });
+                }
+
+                function toggleNamaJiwaSection() {
+                    const section = document.getElementById('namaJiwaSection');
+                    const sapiCheckbox = document.querySelector('input[value="Sapi 1 Ekor"]');
+                    if (!section || !sapiCheckbox) return;
+
+                    if (sapiCheckbox.checked) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                        section.querySelectorAll('input[name="nama_jiwa[]"]').forEach(input => input.value = '');
+                    }
                 }
 
                 function hitungTotal() {
@@ -542,6 +577,8 @@
                 openFlyerModal();
             }, 800); // Delay 800ms for better UX
         }
+
+        toggleNamaJiwaSection();
 
         // Close modal when clicking outside the modal content
         const modal = document.getElementById('flyerModal');

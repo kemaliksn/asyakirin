@@ -166,11 +166,29 @@ table, thead, tbody, tr, td, th { page-break-inside: avoid; }
             <td class="f-col">:</td>
             <td class="f-val">{{ $data['profesi'] ?? '' }}</td>
         </tr>
+        @if(!empty($data['nama_jiwa']))
+        <tr>
+            <td class="f-lbl" style="vertical-align:top; padding-top:1pt;">Nama Jiwa</td>
+            <td class="f-col" style="vertical-align:top; padding-top:1pt;">:</td>
+            <td style="padding-bottom:4pt; vertical-align:top; padding-top:1pt;">
+                <span class="addr-line">{{ implode(' | ', array_filter($data['nama_jiwa'])) }}</span>
+            </td>
+        </tr>
+        @endif
         <tr>
             <td class="f-lbl">Metode</td>
             <td class="f-col">:</td>
             <td class="f-val">{{ $data['bank'] ?? '' }}</td>
         </tr>
+        @if(!empty($data['catatan']))
+        <tr>
+            <td class="f-lbl" style="vertical-align:top; padding-top:1pt;">Catatan</td>
+            <td class="f-col" style="vertical-align:top; padding-top:1pt;">:</td>
+            <td style="padding-bottom:4pt; vertical-align:top; padding-top:1pt;">
+                <span class="addr-line">{{ $data['catatan'] }}</span>
+            </td>
+        </tr>
+        @endif
     </table>
 </td>
 

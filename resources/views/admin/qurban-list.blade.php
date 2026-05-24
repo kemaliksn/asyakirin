@@ -53,6 +53,8 @@
         .btn-filter:hover { opacity: .88; }
         .btn-reset { background: #f1f7f3; border: 1px solid #d3e8da; border-radius: 9px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; font-family: inherit; text-decoration: none; }
         .btn-reset:hover { background: #daf0e4; }
+        .btn-export { background: #2d6a4f; color: #fff; border: none; border-radius: 9px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-export:hover { opacity: .92; }
 
         .table-card { background: #fff; border-radius: 14px; border: 1px solid #e2ece6; overflow: hidden; box-shadow: 0 2px 10px rgba(26,107,60,.05); }
         table { width: 100%; border-collapse: collapse; }
@@ -168,7 +170,7 @@
 
         {{-- Filter --}}
         <form method="GET" action="{{ route('admin.qurban') }}" class="filter-card">
-            <input type="text" name="nama" placeholder="Cari nama pembayar..." class="filter-input" value="{{ request('nama') }}">
+            <input type="text" name="search" placeholder="Cari nama atau nomor referensi..." class="filter-input" value="{{ request('search') }}">
             <select name="status" class="filter-select">
                 <option value="">-- Status --</option>
                 <option value="Lunas" {{ request('status') === 'Lunas' ? 'selected' : '' }}>Lunas</option>
@@ -179,7 +181,8 @@
             <input type="date" name="sampai_tanggal" class="filter-input" value="{{ request('sampai_tanggal') }}" placeholder="Sampai tanggal">
             <div style="flex: 1;"></div>
             <button type="submit" class="btn-filter">Cari</button>
-            <a href="{{ route('admin.qurban') }}" class="btn-reset">Reset</a>
+            <a href="{{ request()->url() }}" class="btn-reset">Reset</a>
+            <a href="{{ request()->fullUrlWithQuery(['export' => 'excel']) }}" class="btn-export">Export Excel</a>
         </form>
 
         {{-- Table --}}
@@ -246,6 +249,32 @@
             </div>
             @endif
         </div>
+
+        @if(isset($deletedQurbans) && $deletedQurbans->count() > 0)
+        <div class="table-card" style="margin-top: 20px;">
+            <div style="padding: 18px 20px; border-bottom: 1px solid #e2ece6; background: #f8faf7; font-weight: 700; color: #1a6b3c;">Histori Terhapus (5 terakhir)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No. Referensi</th>
+                        <th>Nama</th>
+                        <th>Status</th>
+                        <th>Dihapus Pada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($deletedQurbans as $deleted)
+                    <tr>
+                        <td>{{ $deleted->nomor }}</td>
+                        <td>{{ $deleted->nama }}</td>
+                        <td>{{ $deleted->status }}</td>
+                        <td>{{ optional($deleted->deleted_at)->format('d M Y H:i') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
     </div>
 </div>
 

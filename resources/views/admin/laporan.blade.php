@@ -109,7 +109,7 @@
     <div class="filter-card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div class="filter-title">🔍 Filter Data</div>
-            @if(request('tanggal') || request('nama_kasir'))
+            @if(request('dari_tanggal') || request('sampai_tanggal') || request('nama_kasir'))
             <a href="{{ route('admin.laporan') }}" class="btn-reset">Reset Filter</a>
             @endif
         </div>
@@ -117,8 +117,13 @@
         <form method="GET" action="{{ route('admin.laporan') }}" style="margin-top:14px;">
             <div class="filter-group">
                 <div class="form-group">
-                    <label class="form-label">Tanggal</label>
-                    <input type="date" name="tanggal" class="form-input" value="{{ request('tanggal', '') }}">
+                    <label class="form-label">Dari Tanggal</label>
+                    <input type="date" name="dari_tanggal" class="form-input" value="{{ request('dari_tanggal', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Sampai Tanggal</label>
+                    <input type="date" name="sampai_tanggal" class="form-input" value="{{ request('sampai_tanggal', '') }}">
                 </div>
 
                 <div class="form-group">
@@ -133,11 +138,9 @@
                     </select>
                 </div>
 
-                <div></div>
-
-                <div style="display:flex;gap:8px;">
+                <div style="display:flex;gap:8px; align-items:flex-end;">
                     <button type="submit" class="btn-filter">🔍 Terapkan Filter</button>
-                    <a href="{{ route('admin.laporan') }}?export=excel{{ request('tanggal') ? '&tanggal=' . request('tanggal') : '' }}{{ request('nama_kasir') ? '&nama_kasir=' . request('nama_kasir') : '' }}" class="btn-export">
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'excel']) }}" class="btn-export">
                         📥 Export Excel
                     </a>
                 </div>
