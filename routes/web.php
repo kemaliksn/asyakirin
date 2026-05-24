@@ -57,8 +57,13 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->name('logout');
 
-// Form Zakat (publik + kasir + admin)
+// Halaman pilihan awal
 Route::get('/', function () {
+    return view('home');
+});
+
+// Form Zakat (publik + kasir + admin)
+Route::get('/zakat', function () {
     return view('zakat');
 });
 
